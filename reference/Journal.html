@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,200..800;1,6..72,200..800&amp;family=Inter:wght@100..900&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              "inverse-primary": "#b72119",
+              "surface-container-high": "#2a2a2a",
+              "on-primary-fixed-variant": "#930004",
+              "on-tertiary": "#313030",
+              "on-primary": "#690002",
+              "on-tertiary-fixed": "#1c1b1b",
+              "tertiary": "#c8c6c5",
+              "on-secondary-fixed": "#1a1c1c",
+              "on-secondary-container": "#b4b5b5",
+              "error": "#ffb4ab",
+              "surface-container-low": "#1b1b1b",
+              "surface": "#131313",
+              "tertiary-container": "#929090",
+              "inverse-surface": "#e2e2e2",
+              "surface-dim": "#131313",
+              "on-primary-container": "#5c0001",
+              "secondary": "#c6c6c7",
+              "outline-variant": "#5b403c",
+              "surface-tint": "#ffb4a9",
+              "secondary-fixed": "#e2e2e2",
+              "on-tertiary-fixed-variant": "#474746",
+              "on-secondary": "#2f3131",
+              "on-tertiary-container": "#2a2a2a",
+              "surface-variant": "#353535",
+              "primary-fixed": "#ffdad5",
+              "primary-fixed-dim": "#ffb4a9",
+              "primary-container": "#fe5545",
+              "surface-bright": "#393939",
+              "on-error": "#690005",
+              "inverse-on-surface": "#303030",
+              "secondary-container": "#454747",
+              "on-error-container": "#ffdad6",
+              "secondary-fixed-dim": "#c6c6c7",
+              "on-background": "#e2e2e2",
+              "tertiary-fixed": "#e5e2e1",
+              "on-secondary-fixed-variant": "#454747",
+              "background": "#131313",
+              "on-surface": "#e2e2e2",
+              "tertiary-fixed-dim": "#c8c6c5",
+              "surface-container": "#1f1f1f",
+              "primary": "#ffb4a9",
+              "surface-container-highest": "#353535",
+              "on-primary-fixed": "#410001",
+              "surface-container-lowest": "#0e0e0e",
+              "error-container": "#93000a",
+              "outline": "#aa8984",
+              "on-surface-variant": "#e3beb9"
+            },
+            fontFamily: {
+              "headline": ["Newsreader"],
+              "body": ["Inter"],
+              "label": ["Inter"]
+            },
+            borderRadius: {"DEFAULT": "0px", "lg": "0px", "xl": "0px", "full": "9999px"},
+          },
+        },
+      }
+    </script>
+<style>
+      .material-symbols-outlined {
+        font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+      }
+      body {
+        background-color: #131313;
+        color: #e2e2e2;
+      }
+      .no-scrollbar::-webkit-scrollbar {
+        display: none;
+      }
+    </style>
+</head>
+<body class="font-body selection:bg-primary-container selection:text-on-primary">
+<!-- TopNavBar -->
+<nav class="fixed top-0 w-full z-50 bg-surface/80 dark:bg-[#131313]/80 backdrop-blur-xl">
+<div class="flex justify-between items-center px-12 py-8 w-full max-w-none">
+<div class="text-3xl font-serif italic tracking-tighter text-[#e2e2e2] font-headline">The Noir Advocate</div>
+<!-- Desktop Links -->
+<div class="hidden md:flex gap-12 items-center">
+<a class="font-sans uppercase tracking-[0.2em] text-[10px] text-[#e2e2e2]/60 hover:text-[#fe5545] transition-colors duration-0" href="#">Home</a>
+<a class="font-sans uppercase tracking-[0.2em] text-[10px] text-[#e2e2e2]/60 hover:text-[#fe5545] transition-colors duration-0" href="#">Services</a>
+<a class="font-sans uppercase tracking-[0.2em] text-[10px] text-[#fe5545] border-b-0 font-medium" href="#">Journal</a>
+<a class="font-sans uppercase tracking-[0.2em] text-[10px] text-[#e2e2e2]/60 hover:text-[#fe5545] transition-colors duration-0" href="#">Contact</a>
+</div>
+<!-- Mobile Menu Toggle (Semantic Shell Logic) -->
+<div class="md:hidden">
+<span class="material-symbols-outlined text-on-surface" data-icon="menu">menu</span>
+</div>
+</div>
+</nav>
+<main class="pt-40 pb-24">
+<!-- Hero Header -->
+<header class="px-12 mb-32 grid grid-cols-1 md:grid-cols-12 gap-12 items-end">
+<div class="md:col-span-8">
+<div class="font-sans uppercase tracking-[0.3em] text-[11px] text-primary mb-6">Dispatch &amp; Perspective</div>
+<h1 class="text-7xl md:text-[8rem] font-headline italic leading-[0.9] tracking-tighter text-on-surface">Journal</h1>
+</div>
+<div class="md:col-span-4 md:text-right">
+<p class="font-sans text-on-surface/50 text-xs tracking-widest uppercase leading-relaxed max-w-xs md:ml-auto">
+                    A collection of strategic insights, legal philosophy, and the pursuit of narrative precision.
+                </p>
+</div>
+</header>
+<!-- Asymmetric Journal Grid -->
+<section class="px-12">
+<div class="grid grid-cols-1 md:grid-cols-12 gap-y-32 gap-x-12">
+<!-- Large Featured Article -->
+<article class="md:col-span-12 group cursor-pointer">
+<div class="grid grid-cols-1 md:grid-cols-12 gap-12 items-center">
+<div class="md:col-span-7 overflow-hidden bg-surface-container-low">
+<img class="w-full h-[614px] object-cover grayscale contrast-125 brightness-75 group-hover:scale-105 transition-transform duration-1000" data-alt="Black and white dramatic gavel with harsh shadows" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBtXYaGkgWUFKIX8qBMtYv9w4DxT7LMri93jlg7w4AUNtJEvnZcekhJYnOqFrhPh3K6ebHJ3r8D1_cl0ZLM4QWCYhTCgjmjig7MjY7ThVZOfDrlsyW01J_rNm1rvS7XUZmEZwhxE5UtwwgbrjWf_zw4qKA25E4hqZLdipFNAYSA_Fk1tE8GnTpbs9DxIu3ChrxTtWFn9vz9iRdX8AHbdFR8EW82P5FhItSFb5kgwLmeO0HXnvcJYRLsWn8k-xGi5aYEHAIvnhZrTmDF"/>
+</div>
+<div class="md:col-span-5">
+<div class="flex gap-4 items-center mb-6">
+<span class="font-sans uppercase tracking-[0.2em] text-[10px] text-primary">Case Study</span>
+<span class="w-8 h-px bg-outline-variant/30"></span>
+<span class="font-sans uppercase tracking-[0.2em] text-[10px] text-on-surface/40">Oct 14, 2024</span>
+</div>
+<h2 class="text-5xl md:text-6xl font-headline italic leading-tight text-on-surface mb-8 group-hover:text-primary transition-colors">
+                                The Anatomy of Silence: Tactical Restraint in the Courtroom.
+                            </h2>
+<p class="font-body text-on-surface/60 text-lg leading-relaxed mb-8 max-w-md">
+                                Exploring the strategic power of the unsaid. Why the strongest arguments often arrive in the pauses between the evidence.
+                            </p>
+<div class="inline-flex items-center gap-2 group/btn">
+<span class="font-sans uppercase tracking-[0.2em] text-[10px] text-on-surface">Read Statement</span>
+<span class="material-symbols-outlined text-[14px] text-primary" data-icon="arrow_right_alt">arrow_right_alt</span>
+</div>
+</div>
+</div>
+</article>
+<!-- Secondary Grid Items -->
+<article class="md:col-span-5 md:mt-24 group cursor-pointer">
+<div class="bg-surface-container-low aspect-[4/5] overflow-hidden mb-8">
+<img class="w-full h-full object-cover grayscale contrast-150 brightness-50 group-hover:scale-105 transition-transform duration-1000" data-alt="Typewriter in dark room high contrast" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDhCvseIP1ohEsAF8hQbBEi3Rcp63uxDzFGYARKSoEp2o8WsA_LSKBRY1Vlo6_edCAQneVgX_8pfeS3vybRUdn0k84Pkp0XCobqNwHwucfoGuy-c90LIZSyr-i_PB71q088K7WH4048fZzABiOU1ofq4T_k_0tvfnkkwwk-QlDbk46v_i0EBBr291hndSconrdfUA_k2fMItfKP4meXmnXoSTlN5vhZTdZaEio2D_mYn1PCUDSFSZMhyAcZNE3DV7BqrC-kZ3D4Fbq2"/>
+</div>
+<div class="flex gap-4 items-center mb-4">
+<span class="font-sans uppercase tracking-[0.2em] text-[10px] text-primary">Philosophy</span>
+<span class="font-sans uppercase tracking-[0.2em] text-[10px] text-on-surface/40">Sep 29, 2024</span>
+</div>
+<h3 class="text-4xl font-headline italic leading-tight text-on-surface mb-4 group-hover:text-primary transition-colors">
+                        Drafting the Invisible: How Architecture Informs Advocacy.
+                    </h3>
+</article>
+<div class="hidden md:block md:col-span-1"></div>
+<article class="md:col-span-6 group cursor-pointer">
+<div class="bg-surface-container-low aspect-video overflow-hidden mb-8">
+<img class="w-full h-full object-cover grayscale brightness-50 contrast-125 group-hover:scale-105 transition-transform duration-1000" data-alt="Abstract shadow of a man in a hat" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBwzIyTH6oSxmVKiT6B9v9SQyXjJ9dxli_hJulVWJ_VYHU0kPztMNpSv4DA5KrHJHEc79HIv-TGHO-fdu313gNxsKGarhFWtosZDY8U1CmaK0nq3-ll8dZlC_XGs_7V83FF3bJ-wg3EwzmPGkGV45pd6Bojw-Q8Npl0UoxTS3PVXTyKsrdy0fqKzLNLglVHzBL9IqrWNfzT6tPUMhUV3e9mKXQxMLCQNvfHslX9JQdsYaCA7Cm7gpqIonofOkUbNFDQ3BwemE-P9pft"/>
+</div>
+<div class="flex gap-4 items-center mb-4">
+<span class="font-sans uppercase tracking-[0.2em] text-[10px] text-primary">Litigation</span>
+<span class="font-sans uppercase tracking-[0.2em] text-[10px] text-on-surface/40">Sep 12, 2024</span>
+</div>
+<h3 class="text-4xl font-headline italic leading-tight text-on-surface mb-4 group-hover:text-primary transition-colors">
+                        Shadow Play: Navigating the Ethics of Corporate Intelligence.
+                    </h3>
+<p class="font-body text-on-surface/50 text-sm leading-relaxed max-w-sm">
+                        An examination of the thin line between thorough discovery and the invasive gaze of modern corporate law.
+                    </p>
+</article>
+<!-- Vertical Text Inset Row -->
+<div class="md:col-span-12 grid grid-cols-1 md:grid-cols-12 gap-12 py-32 border-y border-outline-variant/10">
+<div class="md:col-span-3">
+<h4 class="font-sans uppercase tracking-[0.4em] text-[9px] text-on-surface/40 mb-12">Archive Selection</h4>
+</div>
+<div class="md:col-span-9 space-y-24">
+<a class="block group" href="#">
+<div class="flex flex-col md:flex-row md:items-baseline justify-between gap-6">
+<h2 class="text-5xl md:text-7xl font-headline italic text-on-surface group-hover:text-primary transition-colors">The Veritas Protocol</h2>
+<span class="font-sans uppercase tracking-[0.2em] text-[10px] text-on-surface/30">August 2024</span>
+</div>
+</a>
+<a class="block group" href="#">
+<div class="flex flex-col md:flex-row md:items-baseline justify-between gap-6">
+<h2 class="text-5xl md:text-7xl font-headline italic text-on-surface group-hover:text-primary transition-colors">Inheritance of Dust</h2>
+<span class="font-sans uppercase tracking-[0.2em] text-[10px] text-on-surface/30">July 2024</span>
+</div>
+</a>
+</div>
+</div>
+<!-- Three Column Row -->
+<article class="md:col-span-4 group cursor-pointer">
+<div class="bg-surface-container-low aspect-square overflow-hidden mb-8">
+<img class="w-full h-full object-cover grayscale brightness-75 group-hover:scale-110 transition-transform duration-[2s]" data-alt="Empty modern office hallway in shadow" src="https://lh3.googleusercontent.com/aida-public/AB6AXuD7ZvBuAPeKv8bv7NaLhRs6LyGZ0neqJel6cYrm2HevmqD0mEltmkv7f0MtJbfSNgOrlMaauoa-C0qS58bcXvWGtUHkx1mB7IT3VpfzPu1aI7zYgWnAGTkoWK-vX9PtjgvuMcmnx6W0lU5ii7CSJv9NS_a3Oztq4JpJs-bzzmrDJLIc6ojFG0_TYX9u8yKrglD6TuKDkHW3zf478yDNr9FgO3F1_-7-JgJ1V_YjEHf4MPKa6ryDKsSBRUZJ-bKbo6miLNzsbdVhKRm8"/>
+</div>
+<span class="font-sans uppercase tracking-[0.2em] text-[10px] text-primary block mb-4">Corporate</span>
+<h3 class="text-3xl font-headline italic leading-tight text-on-surface group-hover:text-primary transition-colors">
+                        Ghost Entities and the Liability of the Void.
+                    </h3>
+</article>
+<article class="md:col-span-4 group cursor-pointer md:mt-12">
+<div class="bg-surface-container-low aspect-square overflow-hidden mb-8">
+<img class="w-full h-full object-cover grayscale brightness-50 group-hover:scale-110 transition-transform duration-[2s]" data-alt="Executive hand holding a cigar in black and white" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCThQm3cJqlqdWk_71WZ80TYawEi3DE2R7ERJ7dmMlGtmjigY17XEJFs00qtQwB6cnpeHlgZi4FkEqO1Y64Rg9L0ty_dK3OmGtcHPXbf0EIr7XgDIZPgEyBx7pvNP_85Th7VPjvEGWYRFBVFjRlArGVrNnMm4Fe72ijTKWTGdsx1YMyxxK-N4B8ZVRQA8SXBh2-bAgKUz5671b_N1xeE9qNMFBJLh-OLia8TDxAjX68yudd_Xn3ITe7FrmVnhufVhozHFd8s3CLvieQ"/>
+</div>
+<span class="font-sans uppercase tracking-[0.2em] text-[10px] text-primary block mb-4">Culture</span>
+<h3 class="text-3xl font-headline italic leading-tight text-on-surface group-hover:text-primary transition-colors">
+                        The Gentleman Litigator: A Dying Art Form.
+                    </h3>
+</article>
+<article class="md:col-span-4 group cursor-pointer">
+<div class="bg-surface-container-low aspect-square overflow-hidden mb-8">
+<img class="w-full h-full object-cover grayscale brightness-75 group-hover:scale-110 transition-transform duration-[2s]" data-alt="Legal papers scattered on a dark desk" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAvx1HaZNQPIWVYIJsfF9lm6PWiTSM5RGNu-aVc87UA9bVUGMi8LDFef3H65R7u4XvpX8WokZVeRmOLRt6qGbr3L1VAGU-mKBPhkAPOsRyzxdfFCgZmhedOFbAHlEyv_nidF9YL6bITLs-o-V8WJ2RKsBT8gnjKe4jRkfZwKp0CYNFmI9eqFV8s60G89aSbgPNY1T978HcJkGCBUD-6cKanjj8qYwPTYtCHVeIlUhqeE77xkFSt7ve63ktiin-o83MSP8LccDAD21o4"/>
+</div>
+<span class="font-sans uppercase tracking-[0.2em] text-[10px] text-primary block mb-4">Briefs</span>
+<h3 class="text-3xl font-headline italic leading-tight text-on-surface group-hover:text-primary transition-colors">
+                        Symmetry in Discovery: A Balanced Approach.
+                    </h3>
+</article>
+</div>
+</section>
+<!-- Pagination -->
+<div class="px-12 mt-40 flex justify-between items-center border-t border-outline-variant/10 pt-12">
+<span class="font-sans uppercase tracking-[0.2em] text-[10px] text-on-surface/30">Showing 01 — 06 of 42</span>
+<div class="flex gap-12">
+<button class="font-sans uppercase tracking-[0.2em] text-[10px] text-on-surface/40 hover:text-primary transition-colors">Previous</button>
+<button class="font-sans uppercase tracking-[0.2em] text-[10px] text-on-surface hover:text-primary transition-colors">Next Archive</button>
+</div>
+</div>
+</main>
+<!-- Footer -->
+<footer class="w-full min-h-[614px] flex flex-col justify-end bg-[#1b1b1b]">
+<div class="w-full px-12 py-24 grid grid-cols-1 md:grid-cols-2 gap-20">
+<div>
+<div class="text-[15vw] font-serif italic leading-none text-[#e2e2e2]/5 select-none font-headline">Advocate</div>
+<div class="mt-12 space-y-4">
+<p class="font-sans uppercase tracking-[0.2em] text-[10px] text-[#e2e2e2]/40">Contact Information</p>
+<p class="text-on-surface font-body text-xl">inquiries@noiradvocate.legal</p>
+<p class="text-on-surface font-body text-xl">+1 (212) 555-0198</p>
+</div>
+</div>
+<div class="flex flex-col justify-between items-end">
+<div class="flex gap-12">
+<a class="font-sans uppercase tracking-[0.2em] text-[10px] text-[#e2e2e2]/40 hover:text-[#e2e2e2]" href="#">Privacy</a>
+<a class="font-sans uppercase tracking-[0.2em] text-[10px] text-[#e2e2e2]/40 hover:text-[#e2e2e2]" href="#">Terms</a>
+<a class="font-sans uppercase tracking-[0.2em] text-[10px] text-[#e2e2e2]/40 hover:text-[#e2e2e2]" href="#">LinkedIn</a>
+<a class="font-sans uppercase tracking-[0.2em] text-[10px] text-[#e2e2e2]/40 hover:text-[#e2e2e2]" href="#">Instagram</a>
+</div>
+<div class="font-sans uppercase tracking-[0.2em] text-[10px] text-[#e2e2e2]/40 text-right">
+                    © 2024 THE NOIR ADVOCATE. ALL RIGHTS RESERVED.
+                </div>
+</div>
+</div>
+</footer>
+<!-- SideNavBar (Mobile/Overlay Menu) - Only shown on action (Simulated) -->
+<div class="hidden fixed inset-0 z-[60] w-full h-full bg-[#131313]" id="side-nav">
+<div class="flex flex-col justify-center items-start px-20 w-full h-full">
+<div class="text-4xl font-serif text-[#e2e2e2] mb-12 font-headline">THE NOIR ADVOCATE</div>
+<nav class="space-y-8">
+<a class="block text-[#e2e2e2] text-5xl font-serif opacity-30 hover:opacity-100 hover:italic transition-all" href="#">Home</a>
+<a class="block text-[#e2e2e2] text-5xl font-serif opacity-30 hover:opacity-100 hover:italic transition-all" href="#">Services</a>
+<a class="block text-[#fe5545] text-6xl italic font-serif" href="#">Journal</a>
+<a class="block text-[#e2e2e2] text-5xl font-serif opacity-30 hover:opacity-100 hover:italic transition-all" href="#">Contact</a>
+</nav>
+<button class="mt-20 flex items-center gap-4 text-primary" onclick="document.getElementById('side-nav').classList.add('hidden')">
+<span class="material-symbols-outlined" data-icon="close">close</span>
+<span class="font-sans uppercase tracking-[0.2em] text-[10px]">Close Menu</span>
+</button>
+</div>
+</div>
+<!-- Script to toggle Mobile Nav -->
+<script>
+        const menuBtn = document.querySelector('[data-icon="menu"]');
+        if(menuBtn) {
+            menuBtn.parentElement.addEventListener('click', () => {
+                document.getElementById('side-nav').classList.remove('hidden');
+            });
+        }
+    </script>
+</body></html>

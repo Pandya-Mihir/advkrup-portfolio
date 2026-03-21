@@ -7,7 +7,21 @@
       "Read(//c/Mihir BackUp/Mihir BackUp/Extra/**)",
       "Bash(npx create-next-app@latest temp-adv-krup --typescript --tailwind --eslint --app --src-dir=false --import-alias=\"@/*\" --yes)",
       "Bash(npm install:*)",
-      "Bash(npx shadcn@latest init -d)"
+      "Bash(npx shadcn@latest init -d)",
+      "Bash(npx tsc:*)",
+      "Bash(node -e \"const c = require\\(''convex''\\); console.log\\(Object.keys\\(c\\).slice\\(0,20\\)\\)\")",
+      "Bash(node -e \"const c = require\\(''convex/server''\\); console.log\\(Object.keys\\(c\\).slice\\(0,20\\)\\)\")",
+      "Bash(npm run:*)",
+      "Bash(node -e \"const m = require\\(''@paper-design/shaders-react''\\); console.log\\(Object.keys\\(m\\)\\)\")",
+      "Bash(node -e \"const {meshGradientMeta} = require\\(''@paper-design/shaders-react''\\); console.log\\(JSON.stringify\\(meshGradientMeta?.params?.map\\(p=>p.key\\), null, 2\\)\\)\")",
+      "Bash(xargs grep:*)",
+      "Bash(xargs cat:*)",
+      "Bash(find 'C:/Mihir BackUp/Mihir BackUp/Extra/advKrupPofolio/node_modules/@paper-design' -name pulsing-border*)",
+      "WebSearch",
+      "WebFetch(domain:github.com)",
+      "WebFetch(domain:www.npmjs.com)",
+      "Bash(node -e \"const p=require\\(''./package.json''\\); console.log\\(JSON.stringify\\(p.dependencies,null,2\\)\\)\")",
+      "Bash(grep -r PortableText 'c:/Mihir BackUp/Mihir BackUp/Extra/advKrupPofolio/node_modules/next-sanity/dist' --include=*.d.ts -l)"
     ]
   }
 }
