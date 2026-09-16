@@ -44,7 +44,7 @@ export function Navbar() {
         {/* Logo */}
         <Link href="/" className="group relative">
           <span className="text-2xl md:text-3xl font-headline italic tracking-tighter text-[#e2e2e2] group-hover:text-[#ffb4a9] transition-colors duration-300">
-            Adv. K. Savjani
+            Krupal Savjani
           </span>
           {/* subtle underline on logo hover */}
           <span className="absolute -bottom-1 left-0 h-px bg-[#ffb4a9] w-0 group-hover:w-full transition-all duration-500 ease-out" />

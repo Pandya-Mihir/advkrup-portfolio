@@ -24,7 +24,7 @@ export function ParallaxWrapper({
 
   return (
     <div ref={ref} className={`relative ${className}`}>
-      <motion.div style={{ y }} className="w-full h-full will-change-transform">
+      <motion.div style={{ y }} className="relative w-full h-full will-change-transform">
         {children}
       </motion.div>
     </div>
@@ -48,7 +48,7 @@ export function WordReveal({
   return (
     <span className={`inline-flex flex-wrap leading-[inherit] ${className}`}>
       {words.map((word, i) => (
-        <span key={i} className="overflow-hidden inline-flex mr-[0.25em]">
+        <span key={i} className="overflow-hidden inline-flex leading-[1.2] mr-[0.25em]">
           <motion.span
             className="inline-block"
             initial={{ y: "110%", opacity: 0 }}

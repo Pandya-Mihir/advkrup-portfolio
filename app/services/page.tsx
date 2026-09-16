@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Image from "next/image";
 import { Navbar } from "@/components/ui/navbar";
 import { Footer } from "@/components/ui/footer";
 import { HeroReveal, FadeUp, StaggerContainer, StaggerItem } from "@/components/ui/animations";
@@ -6,8 +7,6 @@ import { WordReveal } from "@/components/ui/parallax";
 import { BackgroundPaths } from "@/components/ui/background-paths";
 
 const stats = [
-  { value: "15+", label: "Years in Practice" },
-  { value: "10", label: "Practice Areas" },
   { value: "Gujarat", label: "High Court & Revenue Tribunals" },
   { value: "500+", label: "Matters Resolved" },
 ];
@@ -75,7 +74,7 @@ export default function ServicesPage() {
 
         {/* Stats bar pinned to bottom */}
         <FadeUp delay={0.2} className="relative z-10 mt-12">
-          <div className="border-t border-[#5b403c]/20 grid grid-cols-2 md:grid-cols-4">
+          <div className="border-t border-[#5b403c]/20 grid grid-cols-2">
             {stats.map((s, i) => (
               <div
                 key={i}
@@ -96,10 +95,12 @@ export default function ServicesPage() {
       {/* ── Service 01: Land Dispute Litigation ─────────────────── */}
       <section className="relative min-h-screen flex flex-col justify-center mb-16 group">
         <div className="absolute inset-0 z-0 opacity-30 grayscale group-hover:grayscale-0 transition-all duration-700 overflow-hidden">
-          <img
+          <Image
             src="https://images.unsplash.com/photo-1589994965851-a8f479c573a9?w=1600&q=85"
             alt="Legal documents and pen"
-            className="w-full h-full object-cover"
+            fill
+            sizes="100vw"
+            className="object-cover"
           />
           <div className="absolute inset-0 bg-gradient-to-t from-[#131313] via-[#131313]/30 to-transparent" />
         </div>
@@ -148,10 +149,12 @@ export default function ServicesPage() {
       {/* ── Service 02: Revenue Records ──────────────────────────── */}
       <section className="relative min-h-screen flex flex-col justify-center mb-16 group">
         <div className="absolute inset-0 z-0 opacity-30 grayscale group-hover:grayscale-0 transition-all duration-700 overflow-hidden">
-          <img
+          <Image
             src="https://images.unsplash.com/photo-1554224155-6726b3ff858f?w=1600&q=85"
             alt="Revenue documents and records"
-            className="w-full h-full object-cover"
+            fill
+            sizes="100vw"
+            className="object-cover"
           />
           <div className="absolute inset-0 bg-gradient-to-b from-[#131313] via-[#131313]/20 to-[#131313]" />
         </div>
@@ -199,10 +202,12 @@ export default function ServicesPage() {
       {/* ── Service 03: Property Documentation ──────────────────── */}
       <section className="relative min-h-screen flex flex-col justify-center mb-16 group">
         <div className="absolute inset-0 z-0 opacity-30 grayscale group-hover:grayscale-0 transition-all duration-700 overflow-hidden">
-          <img
+          <Image
             src="https://images.unsplash.com/photo-1507679799987-c73779587ccf?w=1600&q=85"
             alt="Property documentation"
-            className="w-full h-full object-cover"
+            fill
+            sizes="100vw"
+            className="object-cover"
           />
           <div className="absolute inset-0 bg-gradient-to-r from-[#131313] via-transparent to-[#131313]" />
         </div>
@@ -251,10 +256,12 @@ export default function ServicesPage() {
       {/* ── Service 04: Land Acquisition ────────────────────────── */}
       <section className="relative min-h-screen flex flex-col justify-center mb-16 group">
         <div className="absolute inset-0 z-0 opacity-30 grayscale group-hover:grayscale-0 transition-all duration-700 overflow-hidden">
-          <img
+          <Image
             src="https://images.unsplash.com/photo-1581092918056-0c4c3acd3789?w=1600&q=85"
             alt="Land acquisition"
-            className="w-full h-full object-cover"
+            fill
+            sizes="100vw"
+            className="object-cover"
           />
           <div className="absolute inset-0 bg-gradient-to-b from-[#131313] via-[#131313]/20 to-[#131313]" />
         </div>
@@ -302,10 +309,12 @@ export default function ServicesPage() {
       {/* ── Service 05: Agricultural Land Issues ─────────────────── */}
       <section className="relative min-h-screen flex flex-col justify-center mb-16 group">
         <div className="absolute inset-0 z-0 opacity-30 grayscale group-hover:grayscale-0 transition-all duration-700 overflow-hidden">
-          <img
+          <Image
             src="https://images.unsplash.com/photo-1464226184884-fa280b87c399?w=1600&q=85"
             alt="Agricultural land"
-            className="w-full h-full object-cover"
+            fill
+            sizes="100vw"
+            className="object-cover"
           />
           <div className="absolute inset-0 bg-gradient-to-t from-[#131313] via-[#131313]/30 to-transparent" />
         </div>
@@ -353,10 +362,12 @@ export default function ServicesPage() {
       {/* ── Service 06: Conversion of Land Use ───────────────────── */}
       <section className="relative min-h-screen flex flex-col justify-center mb-16 group">
         <div className="absolute inset-0 z-0 opacity-30 grayscale group-hover:grayscale-0 transition-all duration-700 overflow-hidden">
-          <img
+          <Image
             src="https://images.unsplash.com/photo-1486325212027-8081e485255e?w=1600&q=85"
             alt="Urban land conversion"
-            className="w-full h-full object-cover"
+            fill
+            sizes="100vw"
+            className="object-cover"
           />
           <div className="absolute inset-0 bg-gradient-to-b from-[#131313] via-[#131313]/20 to-[#131313]" />
         </div>
@@ -404,10 +415,12 @@ export default function ServicesPage() {
       {/* ── Service 07: Tenancy and Tenure Laws ──────────────────── */}
       <section className="relative min-h-screen flex flex-col justify-center mb-16 group">
         <div className="absolute inset-0 z-0 opacity-30 grayscale group-hover:grayscale-0 transition-all duration-700 overflow-hidden">
-          <img
+          <Image
             src="https://images.unsplash.com/photo-1560518883-ce09059eeffa?w=1600&q=85"
             alt="Tenancy law"
-            className="w-full h-full object-cover"
+            fill
+            sizes="100vw"
+            className="object-cover"
           />
           <div className="absolute inset-0 bg-gradient-to-r from-[#131313] via-transparent to-[#131313]" />
         </div>
@@ -455,10 +468,12 @@ export default function ServicesPage() {
       {/* ── Service 08: Appeals and Representation ───────────────── */}
       <section className="relative min-h-screen flex flex-col justify-center mb-16 group">
         <div className="absolute inset-0 z-0 opacity-30 grayscale group-hover:grayscale-0 transition-all duration-700 overflow-hidden">
-          <img
+          <Image
             src="https://images.unsplash.com/photo-1589829545856-d10d557cf95f?w=1600&q=85"
             alt="Court appeals"
-            className="w-full h-full object-cover"
+            fill
+            sizes="100vw"
+            className="object-cover"
           />
           <div className="absolute inset-0 bg-gradient-to-b from-[#131313] via-[#131313]/20 to-[#131313]" />
         </div>
@@ -506,10 +521,12 @@ export default function ServicesPage() {
       {/* ── Service 09: Legal Consultation on Land Policies ──────── */}
       <section className="relative min-h-screen flex flex-col justify-center mb-16 group">
         <div className="absolute inset-0 z-0 opacity-30 grayscale group-hover:grayscale-0 transition-all duration-700 overflow-hidden">
-          <img
+          <Image
             src="https://images.unsplash.com/photo-1450101499163-c8848c66ca85?w=1600&q=85"
             alt="Legal consultation"
-            className="w-full h-full object-cover"
+            fill
+            sizes="100vw"
+            className="object-cover"
           />
           <div className="absolute inset-0 bg-gradient-to-t from-[#131313] via-[#131313]/30 to-transparent" />
         </div>
@@ -557,10 +574,12 @@ export default function ServicesPage() {
       {/* ── Service 10: Court Representation ─────────────────────── */}
       <section className="relative min-h-screen flex flex-col justify-center mb-32 group">
         <div className="absolute inset-0 z-0 opacity-30 grayscale group-hover:grayscale-0 transition-all duration-700 overflow-hidden">
-          <img
+          <Image
             src="https://images.unsplash.com/photo-1575505586569-646b2ca898fc?w=1600&q=85"
             alt="Court representation"
-            className="w-full h-full object-cover"
+            fill
+            sizes="100vw"
+            className="object-cover"
           />
           <div className="absolute inset-0 bg-gradient-to-b from-[#131313] via-[#131313]/20 to-[#131313]" />
         </div>

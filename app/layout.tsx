@@ -9,8 +9,8 @@ import { ScrollProgress } from "@/components/ui/scroll-progress";
 const cormorant = Cormorant_Garamond({
   subsets: ["latin"],
   variable: "--font-cormorant",
-  style: ["normal", "italic"],
-  weight: ["300", "400", "500", "600", "700"],
+  style: ["italic"],
+  weight: ["400"],
   display: "swap",
 });
 
@@ -18,7 +18,7 @@ const newsreader = Newsreader({
   subsets: ["latin"],
   variable: "--font-newsreader",
   style: ["normal", "italic"],
-  weight: ["200", "300", "400", "500", "600", "700", "800"],
+  weight: ["400"],
   display: "swap",
 });
 

@@ -1,9 +1,10 @@
 "use client";
-import { motion } from "framer-motion";
+import { motion, useReducedMotion } from "framer-motion";
 
 /** Single floating SVG path layer — rendered twice (mirrored) for density */
 function FloatingPaths({ position }: { position: number }) {
-  const paths = Array.from({ length: 36 }, (_, i) => {
+  const reducedMotion = useReducedMotion();
+  const paths = Array.from({ length: 16 }, (_, i) => {
     const offset = i * 5 * position;
     const vOffset = i * 6;
     return {
@@ -27,28 +28,39 @@ function FloatingPaths({ position }: { position: number }) {
       fill="none"
       preserveAspectRatio="xMidYMid slice"
     >
-      {paths.map((path) => (
-        <motion.path
-          key={path.id}
-          d={path.d}
-          stroke={path.stroke}
-          strokeWidth={path.width}
-          strokeLinecap="round"
-          initial={{ pathLength: 0, opacity: 0 }}
-          animate={{
-            pathLength: [0, 0.6, 1],
-            opacity: [0, 0.8, 0.4, 0],
-            pathOffset: [0, 0, 1],
-          }}
-          transition={{
-            duration: path.duration,
-            delay: path.delay,
-            repeat: Infinity,
-            ease: "linear",
-            times: [0, 0.3, 1],
-          }}
-        />
-      ))}
+      {paths.map((path) =>
+        reducedMotion ? (
+          <path
+            key={path.id}
+            d={path.d}
+            stroke={path.stroke}
+            strokeWidth={path.width}
+            strokeLinecap="round"
+            opacity={0.4}
+          />
+        ) : (
+          <motion.path
+            key={path.id}
+            d={path.d}
+            stroke={path.stroke}
+            strokeWidth={path.width}
+            strokeLinecap="round"
+            initial={{ pathLength: 0, opacity: 0 }}
+            animate={{
+              pathLength: [0, 0.6, 1],
+              opacity: [0, 0.8, 0.4, 0],
+              pathOffset: [0, 0, 1],
+            }}
+            transition={{
+              duration: path.duration,
+              delay: path.delay,
+              repeat: Infinity,
+              ease: "linear",
+              times: [0, 0.3, 1],
+            }}
+          />
+        )
+      )}
     </svg>
   );
 }

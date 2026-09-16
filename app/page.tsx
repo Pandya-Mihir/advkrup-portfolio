@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Image from "next/image";
 import { Navbar } from "@/components/ui/navbar";
 import { Footer } from "@/components/ui/footer";
 import {
@@ -97,7 +98,7 @@ export default function Home() {
           {/* Left column */}
           <div className="space-y-12">
             <FadeUp>
-              <h2 className="font-headline italic text-5xl text-outline mb-4">Core Mandates</h2>
+              <h2 className="font-headline italic text-5xl text-[#e2e2e2] mb-4">Core Mandates</h2>
             </FadeUp>
 
             <FadeUp delay={0.1}>
@@ -165,10 +166,12 @@ export default function Home() {
           {/* Image with parallax */}
           <SlideIn from="left" className="md:col-span-7 relative overflow-hidden min-h-[300px] md:min-h-0">
             <ParallaxWrapper speed={0.15} className="w-full h-full absolute inset-0">
-              <img
+              <Image
                 src="https://images.unsplash.com/photo-1505664194779-8beaceb93744?w=1600&q=90"
                 alt="Law library — legal books and documents"
-                className="w-full h-full object-cover grayscale contrast-125 brightness-75 scale-110 hover:scale-[1.15] transition-transform duration-700"
+                fill
+                sizes="(min-width: 768px) 58vw, 100vw"
+                className="object-cover grayscale contrast-125 brightness-75 scale-110 hover:scale-[1.15] transition-transform duration-700"
               />
             </ParallaxWrapper>
             <div className="absolute inset-0 bg-[#131313]/50 hover:bg-[#131313]/30 transition-colors duration-500 z-10" />
