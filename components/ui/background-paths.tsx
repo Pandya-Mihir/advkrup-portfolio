@@ -4,7 +4,7 @@ import { motion, useReducedMotion } from "framer-motion";
 /** Single floating SVG path layer — rendered twice (mirrored) for density */
 function FloatingPaths({ position }: { position: number }) {
   const reducedMotion = useReducedMotion();
-  const paths = Array.from({ length: 16 }, (_, i) => {
+  const paths = Array.from({ length: 8 }, (_, i) => {
     const offset = i * 5 * position;
     const vOffset = i * 6;
     return {

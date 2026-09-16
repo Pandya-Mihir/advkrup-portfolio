@@ -40,7 +40,7 @@ export function Navbar() {
 
   return (
     <>
-      <nav className="fixed top-0 w-full z-50 bg-[#131313]/80 backdrop-blur-xl flex justify-between items-center px-8 md:px-12 py-6 md:py-8">
+      <nav className="fixed top-0 w-full z-50 bg-[#131313]/80 backdrop-blur-md transform-gpu will-change-transform flex justify-between items-center px-8 md:px-12 py-6 md:py-8">
         {/* Logo */}
         <Link href="/" className="group relative">
           <span className="text-2xl md:text-3xl font-headline italic tracking-tighter text-[#e2e2e2] group-hover:text-[#ffb4a9] transition-colors duration-300">
