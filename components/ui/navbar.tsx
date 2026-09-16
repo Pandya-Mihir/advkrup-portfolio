@@ -1,7 +1,7 @@
 "use client";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 
 const links = [
@@ -37,10 +37,22 @@ const linkVariants = {
 export function Navbar() {
   const pathname = usePathname();
   const [mobileOpen, setMobileOpen] = useState(false);
+  // Skip the (GPU-expensive) backdrop-blur for the first paint — enabling
+  // it only after the initial load burst (fonts, hero animations, hydration)
+  // has settled avoids the compositor jitter that burst causes on mount.
+  const [blurReady, setBlurReady] = useState(false);
+  useEffect(() => {
+    const t = setTimeout(() => setBlurReady(true), 150);
+    return () => clearTimeout(t);
+  }, []);
 
   return (
     <>
-      <nav className="fixed top-0 w-full z-50 bg-[#131313]/80 backdrop-blur-md transform-gpu will-change-transform flex justify-between items-center px-8 md:px-12 py-6 md:py-8">
+      <nav
+        className={`fixed top-0 w-full z-50 transform-gpu will-change-transform flex justify-between items-center px-8 md:px-12 py-6 md:py-8 transition-[backdrop-filter] duration-300 ${
+          blurReady ? "bg-[#131313]/80 backdrop-blur-md" : "bg-[#131313]/95"
+        }`}
+      >
         {/* Logo */}
         <Link href="/" className="group relative">
           <span className="text-2xl md:text-3xl font-headline italic tracking-tighter text-[#e2e2e2] group-hover:text-[#ffb4a9] transition-colors duration-300">

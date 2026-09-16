@@ -17,7 +17,9 @@ function FloatingPaths({ position }: { position: number }) {
           : `rgba(226, 226, 226, ${0.07 + i * 0.004})`,
       width: 1.2 + i * 0.07,
       duration: 6 + i * 0.3,
-      delay: i * 0.08,
+      // Base offset keeps the animation from starting in the same instant
+      // as first paint/hydration/font-swap — spreads out the compositor load.
+      delay: 0.2 + i * 0.08,
     };
   });
 
