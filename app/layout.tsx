@@ -3,8 +3,8 @@ import { Newsreader, Inter, Cormorant_Garamond } from "next/font/google";
 import "./globals.css";
 import { ConvexClientProvider } from "./ConvexClientProvider";
 import TermsModal from "@/components/TermsModal";
-import { CustomCursor } from "@/components/ui/cursor";
 import { ScrollProgress } from "@/components/ui/scroll-progress";
+import { AnimationGateProvider } from "@/components/ui/animation-gate";
 
 const cormorant = Cormorant_Garamond({
   subsets: ["latin"],
@@ -40,12 +40,13 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="en" className={`${newsreader.variable} ${inter.variable} ${cormorant.variable}`}>
       <body className="font-body selection:bg-[#fe5545] selection:text-white">
-        {/* Global chrome — cursor & progress are client components */}
-        <CustomCursor />
+        {/* Global chrome — progress bar is a client component */}
         <ScrollProgress />
 
         <ConvexClientProvider>
-          <TermsModal>{children}</TermsModal>
+          <AnimationGateProvider>
+            <TermsModal>{children}</TermsModal>
+          </AnimationGateProvider>
         </ConvexClientProvider>
       </body>
     </html>

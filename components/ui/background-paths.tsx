@@ -1,81 +1,80 @@
 "use client";
-import { motion, useReducedMotion } from "framer-motion";
-
-/** Single floating SVG path layer — rendered twice (mirrored) for density */
-function FloatingPaths({ position }: { position: number }) {
-  const reducedMotion = useReducedMotion();
-  const paths = Array.from({ length: 8 }, (_, i) => {
-    const offset = i * 5 * position;
-    const vOffset = i * 6;
-    return {
-      id: i,
-      d: `M${-380 - offset} ${-189 + vOffset}C${-380 - offset} ${-189 + vOffset} ${-312 + offset * 0.3} ${216 - vOffset} ${152 + offset * 0.2} ${343 - vOffset}C${616 + offset * 0.2} ${470 - vOffset} ${684 - offset * 0.1} ${875 - vOffset} ${684 - offset * 0.1} ${875 - vOffset}`,
-      /* Subtle vermilion tint on every 4th path, pure white/grey otherwise */
-      stroke:
-        i % 4 === 0
-          ? `rgba(254, 85, 69, ${0.12 + i * 0.006})`
-          : `rgba(226, 226, 226, ${0.07 + i * 0.004})`,
-      width: 1.2 + i * 0.07,
-      duration: 6 + i * 0.3,
-      // Base offset keeps the animation from starting in the same instant
-      // as first paint/hydration/font-swap — spreads out the compositor load.
-      delay: 0.2 + i * 0.08,
-    };
-  });
-
-  return (
-    <svg
-      className="absolute inset-0 w-full h-full pointer-events-none"
-      viewBox="0 0 696 876"
-      fill="none"
-      preserveAspectRatio="xMidYMid slice"
-    >
-      {paths.map((path) =>
-        reducedMotion ? (
-          <path
-            key={path.id}
-            d={path.d}
-            stroke={path.stroke}
-            strokeWidth={path.width}
-            strokeLinecap="round"
-            opacity={0.4}
-          />
-        ) : (
-          <motion.path
-            key={path.id}
-            d={path.d}
-            stroke={path.stroke}
-            strokeWidth={path.width}
-            strokeLinecap="round"
-            initial={{ pathLength: 0, opacity: 0 }}
-            animate={{
-              pathLength: [0, 0.6, 1],
-              opacity: [0, 0.8, 0.4, 0],
-              pathOffset: [0, 0, 1],
-            }}
-            transition={{
-              duration: path.duration,
-              delay: path.delay,
-              repeat: Infinity,
-              ease: "linear",
-              times: [0, 0.3, 1],
-            }}
-          />
-        )
-      )}
-    </svg>
-  );
-}
+import { useEffect, useRef } from "react";
+import { useAnimationGate } from "./animation-gate";
 
 /**
- * Drop this inside any `relative overflow-hidden` container.
- * It fills the parent with two mirrored SVG path layers.
+ * Topographic contour lines + survey grid + a ghosted compass rose — layers
+ * that evoke a land-survey / elevation map, tying the hero background to the
+ * firm's land & revenue practice.
+ *
+ * The lines and compass are pre-rendered static SVG assets
+ * (public/hero-contours.svg, public/hero-compass.svg) revealed with a single
+ * plain CSS opacity transition each — no per-path JS-driven animation, no
+ * Framer Motion involved here at all, so there's effectively zero runtime
+ * cost beyond loading two small static images.
+ *
+ * The contour lines are only revealed within a soft radius of the cursor
+ * (like exploring a map with a flashlight) — position is written straight
+ * to a CSS custom property on mousemove, bypassing React entirely, so it's
+ * one GPU-composited mask lookup per frame, not a re-render.
  */
 export function BackgroundPaths() {
+  const gateReady = useAnimationGate();
+  const containerRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const el = containerRef.current;
+    if (!el) return;
+
+    function handleMove(e: MouseEvent) {
+      const rect = el!.getBoundingClientRect();
+      const inside = e.clientX >= rect.left && e.clientX <= rect.right && e.clientY >= rect.top && e.clientY <= rect.bottom;
+      el!.style.setProperty("--reveal-x", inside ? `${e.clientX - rect.left}px` : "-9999px");
+      el!.style.setProperty("--reveal-y", inside ? `${e.clientY - rect.top}px` : "-9999px");
+    }
+
+    window.addEventListener("mousemove", handleMove);
+    return () => window.removeEventListener("mousemove", handleMove);
+  }, []);
+
   return (
-    <div className="absolute inset-0 w-full h-full pointer-events-none overflow-hidden">
-      <FloatingPaths position={1} />
-      <FloatingPaths position={-1} />
+    <div ref={containerRef} className="absolute inset-0 w-full h-full pointer-events-none overflow-hidden">
+      {/* Radial glow — lighting depth behind the hero text, always on, zero cost */}
+      <div
+        className="absolute inset-0"
+        style={{
+          background:
+            "radial-gradient(ellipse 60% 50% at 28% 42%, rgba(254,85,69,0.09), transparent 65%), radial-gradient(ellipse 45% 60% at 85% 15%, rgba(226,226,226,0.05), transparent 70%)",
+        }}
+      />
+
+      {/* Faint cadastral/survey grid — pure CSS, no runtime cost */}
+      <div
+        className="absolute inset-0 opacity-[0.05]"
+        style={{
+          backgroundImage:
+            "linear-gradient(rgba(226,226,226,0.6) 1px, transparent 1px), linear-gradient(90deg, rgba(226,226,226,0.6) 1px, transparent 1px)",
+          backgroundSize: "64px 64px",
+        }}
+      />
+
+      {/* eslint-disable-next-line @next/next/no-img-element -- tiny decorative vector, not an LCP candidate */}
+      <img
+        src="/hero-compass.svg"
+        alt=""
+        aria-hidden="true"
+        className="absolute -top-[18%] -right-[12%] w-[70vw] h-[70vw] max-w-[640px] max-h-[640px] transition-opacity duration-[1800ms] ease-out motion-reduce:transition-none"
+        style={{ opacity: gateReady ? 0.07 : 0 }}
+      />
+
+      {/* eslint-disable-next-line @next/next/no-img-element -- tiny decorative vector, not an LCP candidate */}
+      <img
+        src="/hero-contours.svg"
+        alt=""
+        aria-hidden="true"
+        className="hero-drift hero-spotlight absolute inset-0 w-full h-full object-cover transition-opacity duration-[1600ms] ease-out motion-reduce:transition-none"
+        style={{ opacity: gateReady ? 1 : 0 }}
+      />
     </div>
   );
 }

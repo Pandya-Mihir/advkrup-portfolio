@@ -1,6 +1,7 @@
 "use client";
 import { useRef, ReactNode } from "react";
 import { motion, useScroll, useTransform } from "framer-motion";
+import { useAnimationGate } from "./animation-gate";
 
 /**
  * ParallaxWrapper — children move at `speed * 100`% of scroll distance.
@@ -45,14 +46,15 @@ export function WordReveal({
   delay?: number;
 }) {
   const words = text.split(" ");
+  const gateReady = useAnimationGate();
   return (
     <span className={`inline-flex flex-wrap leading-[inherit] ${className}`}>
       {words.map((word, i) => (
         <span key={i} className="overflow-hidden inline-flex leading-[1.2] mr-[0.25em]">
           <motion.span
-            className="inline-block"
+            className="inline-block transform-gpu will-change-transform"
             initial={{ y: "110%", opacity: 0 }}
-            animate={{ y: 0, opacity: 1 }}
+            animate={gateReady ? { y: 0, opacity: 1 } : {}}
             transition={{
               duration: 0.75,
               delay: delay + i * 0.09,

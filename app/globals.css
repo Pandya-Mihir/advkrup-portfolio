@@ -181,13 +181,6 @@ body {
   overflow-x: hidden;
 }
 
-/* Hide system cursor — custom cursor takes over on pointer devices */
-@media (pointer: fine) {
-  *, *::before, *::after {
-    cursor: none !important;
-  }
-}
-
 /* Smooth scroll */
 html {
   scroll-behavior: smooth;
@@ -257,4 +250,51 @@ a[role="button"]:active {
 .prose-noir strong {
   color: #e2e2e2;
   font-weight: 500;
+}
+
+/* ── Hero background drift — a single cheap transform, not per-element motion ── */
+@keyframes hero-drift {
+  0%,
+  100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.035);
+  }
+}
+.hero-drift {
+  animation: hero-drift 45s ease-in-out infinite;
+}
+@media (prefers-reduced-motion: reduce) {
+  .hero-drift {
+    animation: none;
+  }
+}
+
+/* ── Hero spotlight — contour lines only reveal within a radius of the
+   cursor. Position is written directly as CSS custom properties on
+   mousemove (no React re-render), so this costs one GPU-composited mask
+   lookup, not a repaint. Touch devices have no real hover, so the mask is
+   dropped there and the lines just show normally. ── */
+.hero-spotlight {
+  -webkit-mask-image: radial-gradient(
+    circle 260px at var(--reveal-x, -9999px) var(--reveal-y, -9999px),
+    black 0%,
+    black 55%,
+    transparent 100%
+  );
+  mask-image: radial-gradient(
+    circle 260px at var(--reveal-x, -9999px) var(--reveal-y, -9999px),
+    black 0%,
+    black 55%,
+    transparent 100%
+  );
+  -webkit-mask-repeat: no-repeat;
+  mask-repeat: no-repeat;
+}
+@media (hover: none) {
+  .hero-spotlight {
+    -webkit-mask-image: none;
+    mask-image: none;
+  }
 }

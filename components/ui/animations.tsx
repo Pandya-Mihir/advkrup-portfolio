@@ -1,6 +1,7 @@
 "use client";
 import { motion, useInView, Variants } from "framer-motion";
 import { useRef, ReactNode } from "react";
+import { useAnimationGate } from "./animation-gate";
 
 const easeOut = [0.16, 1, 0.3, 1] as const;
 
@@ -12,10 +13,11 @@ interface BaseProps {
 
 /* ── Page-load hero reveal (plays immediately, not on scroll) ── */
 export function HeroReveal({ children, delay = 0, className = "" }: BaseProps) {
+  const gateReady = useAnimationGate();
   return (
     <motion.div
       initial={{ opacity: 0, y: 52 }}
-      animate={{ opacity: 1, y: 0 }}
+      animate={gateReady ? { opacity: 1, y: 0 } : {}}
       transition={{ duration: 1.1, delay, ease: easeOut }}
       className={className}
     >
@@ -28,11 +30,12 @@ export function HeroReveal({ children, delay = 0, className = "" }: BaseProps) {
 export function FadeUp({ children, delay = 0, className = "" }: BaseProps) {
   const ref = useRef<HTMLDivElement>(null);
   const isInView = useInView(ref, { once: true, amount: 0.15 });
+  const gateReady = useAnimationGate();
   return (
     <motion.div
       ref={ref}
       initial={{ opacity: 0, y: 48 }}
-      animate={isInView ? { opacity: 1, y: 0 } : {}}
+      animate={gateReady && isInView ? { opacity: 1, y: 0 } : {}}
       transition={{ duration: 0.9, delay, ease: easeOut }}
       className={className}
     >
@@ -45,11 +48,12 @@ export function FadeUp({ children, delay = 0, className = "" }: BaseProps) {
 export function FadeIn({ children, delay = 0, className = "" }: BaseProps) {
   const ref = useRef<HTMLDivElement>(null);
   const isInView = useInView(ref, { once: true, amount: 0.15 });
+  const gateReady = useAnimationGate();
   return (
     <motion.div
       ref={ref}
       initial={{ opacity: 0 }}
-      animate={isInView ? { opacity: 1 } : {}}
+      animate={gateReady && isInView ? { opacity: 1 } : {}}
       transition={{ duration: 1.2, delay }}
       className={className}
     >
@@ -67,11 +71,12 @@ export function SlideIn({
 }: BaseProps & { from?: "left" | "right" }) {
   const ref = useRef<HTMLDivElement>(null);
   const isInView = useInView(ref, { once: true, amount: 0.15 });
+  const gateReady = useAnimationGate();
   return (
     <motion.div
       ref={ref}
       initial={{ opacity: 0, x: from === "left" ? -64 : 64 }}
-      animate={isInView ? { opacity: 1, x: 0 } : {}}
+      animate={gateReady && isInView ? { opacity: 1, x: 0 } : {}}
       transition={{ duration: 0.9, delay, ease: easeOut }}
       className={className}
     >
@@ -93,12 +98,13 @@ export const staggerItemVariants: Variants = {
 export function StaggerContainer({ children, className = "" }: { children: ReactNode; className?: string }) {
   const ref = useRef<HTMLDivElement>(null);
   const isInView = useInView(ref, { once: true, amount: 0.1 });
+  const gateReady = useAnimationGate();
   return (
     <motion.div
       ref={ref}
       variants={staggerContainerVariants}
       initial="hidden"
-      animate={isInView ? "visible" : "hidden"}
+      animate={gateReady && isInView ? "visible" : "hidden"}
       className={className}
     >
       {children}
@@ -119,11 +125,12 @@ export function StaggerItem({ children, className = "" }: { children: ReactNode;
 export function DrawLine({ delay = 0, className = "" }: { delay?: number; className?: string }) {
   const ref = useRef<HTMLDivElement>(null);
   const isInView = useInView(ref, { once: true, amount: 0.1 });
+  const gateReady = useAnimationGate();
   return (
     <motion.div
       ref={ref}
       initial={{ scaleX: 0, originX: 0 }}
-      animate={isInView ? { scaleX: 1 } : {}}
+      animate={gateReady && isInView ? { scaleX: 1 } : {}}
       transition={{ duration: 1, delay, ease: easeOut }}
       className={className}
       style={{ transformOrigin: "left" }}

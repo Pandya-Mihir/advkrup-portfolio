@@ -1,8 +1,9 @@
 "use client";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import { useAnimationGate } from "./animation-gate";
 
 const links = [
   { href: "/", label: "Home" },
@@ -37,20 +38,17 @@ const linkVariants = {
 export function Navbar() {
   const pathname = usePathname();
   const [mobileOpen, setMobileOpen] = useState(false);
-  // Skip the (GPU-expensive) backdrop-blur for the first paint — enabling
-  // it only after the initial load burst (fonts, hero animations, hydration)
-  // has settled avoids the compositor jitter that burst causes on mount.
-  const [blurReady, setBlurReady] = useState(false);
-  useEffect(() => {
-    const t = setTimeout(() => setBlurReady(true), 150);
-    return () => clearTimeout(t);
-  }, []);
+  // Skip the (GPU-expensive) backdrop-blur until the shared animation gate
+  // opens — enabling it only after the initial load burst (fonts, hero
+  // animations, hydration) has settled avoids the compositor jitter that
+  // burst causes on mount.
+  const gateReady = useAnimationGate();
 
   return (
     <>
       <nav
         className={`fixed top-0 w-full z-50 transform-gpu will-change-transform flex justify-between items-center px-8 md:px-12 py-6 md:py-8 transition-[backdrop-filter] duration-300 ${
-          blurReady ? "bg-[#131313]/80 backdrop-blur-md" : "bg-[#131313]/95"
+          gateReady ? "bg-[#131313]/80 backdrop-blur-md" : "bg-[#131313]/95"
         }`}
       >
         {/* Logo */}
