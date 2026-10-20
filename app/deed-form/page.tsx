@@ -25,10 +25,36 @@ const DOC_OPTIONS = [
   "Agreement to Sell (Notarised)",
   "Agreement to Sell (Registered)",
   "MOU",
+  "Cancellation Deed",
 ];
 function isATS(doc: string) {
-  return doc === "Agreement to Sell (Notarised)" || doc === "Agreement to Sell (Registered)";
+  return (
+    doc === "Agreement to Sell (Notarised)" ||
+    doc === "Agreement to Sell (Registered)"
+  );
 }
+
+/*
+ * A cancellation deed cancels an earlier document between the same parties
+ * — usually an Agreement to Sell — so it needs that document's identity
+ * (what it was, when, and its registration or notary serial number) instead
+ * of a sale price. The sellers and buyers are the parties to the original
+ * document, and the money section becomes the refund to the buyer.
+ */
+const CANCELLATION = "Cancellation Deed";
+function isCancellation(doc: string) {
+  return doc === CANCELLATION;
+}
+/** The one cancellable document that may have no registration or notary number. */
+function isUnregisteredOption(doc: string) {
+  return doc === "MOU";
+}
+const CANCEL_DOC_OPTIONS = [
+  "Agreement to Sell (Notarised)",
+  "Agreement to Sell (Registered)",
+  "Sale Deed",
+  "MOU",
+];
 
 const WITNESS_MAX = 2;
 const PAYMENT_MAX = 5;
@@ -44,8 +70,20 @@ type Party = {
 };
 type Payment = { date: string; amount: string; mode: string; ref: string };
 
-const emptyParty = (): Party => ({ name: "", age: "", occupation: "", aadhaar: "", pan: "", address: "" });
-const emptyPayment = (): Payment => ({ date: "", amount: "", mode: "", ref: "" });
+const emptyParty = (): Party => ({
+  name: "",
+  age: "",
+  occupation: "",
+  aadhaar: "",
+  pan: "",
+  address: "",
+});
+const emptyPayment = (): Payment => ({
+  date: "",
+  amount: "",
+  mode: "",
+  ref: "",
+});
 
 /* ── Saved contacts (this browser only) — autofill repeat parties ────── */
 type Contact = Party & { updatedAt: number };
@@ -78,6 +116,25 @@ type FormState = {
   tp: string;
   fp: string;
   fpSize: string;
+  /* Cancellation deed only: the document being cancelled. */
+  cancelDoc: string;
+  cancelDate: string;
+  cancelRegNo: string;
+  cancelOffice: string;
+  cancelReason: string;
+  /** "Yes" / "No": was possession handed over under that document? */
+  cancelPossession: string;
+  /** Total the buyers paid under that document (digits; "0" if nothing). */
+  cancelPaid: string;
+  /*
+   * The refund lives in its own fields rather than reusing `consideration` /
+   * `payments`: switching a filled sale form to Cancellation would otherwise
+   * turn its sale price and instalments into "refunds" without a word, and
+   * switching back keeps the sale figures intact.
+   */
+  refundAmount: string;
+  refundCount: number;
+  refunds: Payment[];
   sellers: Party[];
   buyers: Party[];
   witnesses: Party[];
@@ -102,6 +159,16 @@ function initialState(): FormState {
     tp: "",
     fp: "",
     fpSize: "",
+    cancelDoc: "",
+    cancelDate: "",
+    cancelRegNo: "",
+    cancelOffice: "",
+    cancelReason: "",
+    cancelPossession: "",
+    cancelPaid: "",
+    refundAmount: "",
+    refundCount: 0,
+    refunds: Array.from({ length: PAYMENT_MAX }, emptyPayment),
     sellers: [emptyParty()],
     buyers: [emptyParty()],
     witnesses: [emptyParty()],
@@ -128,7 +195,9 @@ function fmtINR(numStr: string): string {
 }
 function fmtAadhaar(s: string): string {
   const d = onlyDigits(s);
-  return d.length === 12 ? d.replace(/(\d{4})(\d{4})(\d{4})/, "$1 $2 $3") : (s || "").trim();
+  return d.length === 12
+    ? d.replace(/(\d{4})(\d{4})(\d{4})/, "$1 $2 $3")
+    : (s || "").trim();
 }
 function fmtDateDMY(v: string): string {
   const m = /^(\d{4})-(\d{2})-(\d{2})$/.exec((v || "").trim());
@@ -161,33 +230,95 @@ function runValidation(state: FormState): Record<string, string> {
   const req = (id: string, v: string, msg: string) => {
     if (!v.trim()) errors[id] = msg;
   };
+  // Checked first: errors are reported (and the page scrolls to the first)
+  // in the order they are added, and this block sits above the land fields.
+  const cancelling = isCancellation(state.doc);
+  if (cancelling) {
+    if (!state.cancelDoc)
+      errors.cancelDoc = "Select the document being cancelled";
+    req(
+      "cancelDate",
+      state.cancelDate,
+      "Enter the date of the original document",
+    );
+    // An MOU is often neither registered nor notarised, so it may have no
+    // number or office to give; every other option always has both.
+    if (!isUnregisteredOption(state.cancelDoc)) {
+      req(
+        "cancelRegNo",
+        state.cancelRegNo,
+        "Enter its registration or notary serial number",
+      );
+      req(
+        "cancelOffice",
+        state.cancelOffice,
+        "Enter the Sub-Registrar office or notary",
+      );
+    }
+    if (!state.cancelPossession)
+      errors.cancelPossession = "Select whether possession was given";
+    req(
+      "cancelPaid",
+      state.cancelPaid,
+      "Enter the amount paid under that document (0 if nothing)",
+    );
+  }
   req("village", state.village, "Enter the village");
   req("taluka", state.taluka, "Enter the taluka");
   req("district", state.district, "Enter the district");
   req("surveyNew", state.surveyNew, "Enter the new survey / block number");
   req("area", state.area, "Enter the area being sold");
-  req("consideration", state.consideration, "Enter the total consideration amount");
+  if (cancelling) {
+    req(
+      "refundAmount",
+      state.refundAmount,
+      "Enter the refund amount (0 if nothing is refunded)",
+    );
+    const paidUnder = onlyDigits(state.cancelPaid);
+    const refund = onlyDigits(state.refundAmount);
+    if (paidUnder && refund && Number(refund) > Number(paidUnder)) {
+      errors.refundAmount =
+        "The refund cannot be more than the amount paid under that document";
+    }
+  } else {
+    req(
+      "consideration",
+      state.consideration,
+      "Enter the total consideration amount",
+    );
+  }
   req("senderName", state.senderName, "Enter your name");
 
   if (!state.senderMobile.trim() || !isValidMobile(state.senderMobile)) {
     errors.senderMobile = "Enter a 10-digit mobile number";
   }
-  if (isATS(state.doc)) req("dueDate", state.dueDate, "Enter the date by which the balance is payable");
+  if (isATS(state.doc))
+    req(
+      "dueDate",
+      state.dueDate,
+      "Enter the date by which the balance is payable",
+    );
 
   function checkParty(prefix: string, p: Party, requireOccupation: boolean) {
     if (!p.name.trim()) errors[prefix + "name"] = "Required";
-    if (requireOccupation && !p.occupation.trim()) errors[prefix + "occupation"] = "Required";
-    if (onlyDigits(p.aadhaar).length !== 12) errors[prefix + "aadhaar"] = "Aadhaar number must be 12 digits";
-    if (!isValidPAN(p.pan)) errors[prefix + "pan"] = "Enter 10-character PAN (like ABCDE1234F) or write Form 60";
+    if (requireOccupation && !p.occupation.trim())
+      errors[prefix + "occupation"] = "Required";
+    if (onlyDigits(p.aadhaar).length !== 12)
+      errors[prefix + "aadhaar"] = "Aadhaar number must be 12 digits";
+    if (!isValidPAN(p.pan))
+      errors[prefix + "pan"] =
+        "Enter 10-character PAN (like ABCDE1234F) or write Form 60";
     if (!p.address.trim()) errors[prefix + "address"] = "Required";
   }
   state.sellers.forEach((p, i) => checkParty(`seller-${i}-`, p, true));
   state.buyers.forEach((p, i) => checkParty(`buyer-${i}-`, p, true));
   state.witnesses.forEach((p, i) => checkParty(`witness-${i}-`, p, false));
 
-  for (let i = 0; i < state.paymentCount; i++) {
-    const p = state.payments[i];
-    const prefix = `payment-${i}-`;
+  const count = cancelling ? state.refundCount : state.paymentCount;
+  const list = cancelling ? state.refunds : state.payments;
+  for (let i = 0; i < count; i++) {
+    const p = list[i];
+    const prefix = `${cancelling ? "refund" : "payment"}-${i}-`;
     if (!p.date) errors[prefix + "date"] = "Required";
     if (!onlyDigits(p.amount)) errors[prefix + "amount"] = "Required";
     if (!p.mode) errors[prefix + "mode"] = "Required";
@@ -200,6 +331,28 @@ function buildText(state: FormState): string {
   const L: string[] = [];
   L.push("*DEED DETAILS FORM*");
   L.push(`Document: ${show(state.doc)}`);
+  const cancelling = isCancellation(state.doc);
+  if (cancelling) {
+    L.push("");
+    L.push("*DOCUMENT BEING CANCELLED*");
+    L.push(`Document: ${show(state.cancelDoc)}`);
+    L.push(`Dated: ${show(fmtDateDMY(state.cancelDate))}`);
+    // Left blank on purpose for an unregistered MOU: say so, rather than
+    // a "—" that reads as a field the client forgot.
+    const blankOk = isUnregisteredOption(state.cancelDoc)
+      ? "Not registered / not notarised"
+      : "—";
+    L.push(`Registration / Serial No.: ${state.cancelRegNo.trim() || blankOk}`);
+    L.push(
+      `Sub-Registrar Office / Notary: ${state.cancelOffice.trim() || blankOk}`,
+    );
+    L.push(`Possession given to buyers: ${show(state.cancelPossession)}`);
+    const paidUnder = onlyDigits(state.cancelPaid);
+    L.push(
+      `Paid by buyers under it: ${paidUnder ? "Rs. " + fmtINR(paidUnder) : "—"}`,
+    );
+    L.push(`Reason: ${show(state.cancelReason.replace(/\s*\n\s*/g, " "))}`);
+  }
   L.push("");
   L.push("*LAND*");
   L.push(`Village: ${show(state.village)}`);
@@ -213,7 +366,12 @@ function buildText(state: FormState): string {
   L.push(`Final Plot No.: ${show(state.fp)}`);
   L.push(`Final Plot Size: ${show(fmtArea(state.fpSize))}`);
 
-  function pushParty(label: string, p: Party, i: number, includeOccupation: boolean) {
+  function pushParty(
+    label: string,
+    p: Party,
+    i: number,
+    includeOccupation: boolean,
+  ) {
     L.push("");
     L.push(`*${label} ${i + 1}*`);
     L.push(`Name: ${show(p.name)}`);
@@ -237,31 +395,47 @@ function buildText(state: FormState): string {
   state.witnesses.forEach((p, i) => pushParty("WITNESS", p, i, false));
 
   L.push("");
-  L.push("*PAYMENT*");
-  const cons = onlyDigits(state.consideration);
-  L.push(`Total Consideration: ${cons ? "Rs. " + fmtINR(cons) : "—"}`);
-  if (isATS(state.doc)) L.push(`Payment Due Date: ${show(fmtDateDMY(state.dueDate))}`);
+  L.push(cancelling ? "*REFUND*" : "*PAYMENT*");
+  const cons = onlyDigits(
+    cancelling ? state.refundAmount : state.consideration,
+  );
+  L.push(
+    `${cancelling ? "Refund Amount" : "Total Consideration"}: ${cons ? "Rs. " + fmtINR(cons) : "—"}`,
+  );
+  if (cancelling) {
+    const paidUnder = onlyDigits(state.cancelPaid);
+    const kept = paidUnder && cons ? Number(paidUnder) - Number(cons) : 0;
+    if (kept > 0) L.push(`Forfeited / adjusted: Rs. ${fmtINR(String(kept))}`);
+  }
+  const count = cancelling ? state.refundCount : state.paymentCount;
+  const list = cancelling ? state.refunds : state.payments;
+  if (isATS(state.doc))
+    L.push(`Payment Due Date: ${show(fmtDateDMY(state.dueDate))}`);
 
   let paid = 0;
   let anyPaid = false;
-  if (state.paymentCount === 0) {
-    L.push("Payments made: None");
+  if (count === 0) {
+    L.push(cancelling ? "Refunds paid: None" : "Payments made: None");
   } else {
-    for (let i = 0; i < state.paymentCount; i++) {
-      const p = state.payments[i];
+    for (let i = 0; i < count; i++) {
+      const p = list[i];
       const amt = onlyDigits(p.amount);
       if (amt) {
         paid += Number(amt);
         anyPaid = true;
       }
       L.push(
-        `Paid ${i + 1}: ${show(fmtDateDMY(p.date))} · ${amt ? "Rs. " + fmtINR(amt) : "—"} · ${show(p.mode)} · ${show(p.ref)}`
+        `${cancelling ? "Refund" : "Paid"} ${i + 1}: ${show(fmtDateDMY(p.date))} · ${amt ? "Rs. " + fmtINR(amt) : "—"} · ${show(p.mode)} · ${show(p.ref)}`,
       );
     }
   }
   if (cons && anyPaid) {
-    L.push(`Total Paid: Rs. ${fmtINR(String(paid))}`);
-    L.push(`Balance: Rs. ${fmtINR(String(Math.max(0, Number(cons) - paid)))}`);
+    L.push(
+      `${cancelling ? "Total Refunded" : "Total Paid"}: Rs. ${fmtINR(String(paid))}`,
+    );
+    L.push(
+      `Balance${cancelling ? " to Refund" : ""}: Rs. ${fmtINR(String(Math.max(0, Number(cons) - paid)))}`,
+    );
   }
 
   L.push("");
@@ -269,7 +443,9 @@ function buildText(state: FormState): string {
   L.push(`Name: ${show(state.senderName)}`);
   L.push(`Mobile: ${show(state.senderMobile)}`);
   const now = new Date();
-  L.push(`Filled on: ${String(now.getDate()).padStart(2, "0")}-${String(now.getMonth() + 1).padStart(2, "0")}-${now.getFullYear()}`);
+  L.push(
+    `Filled on: ${String(now.getDate()).padStart(2, "0")}-${String(now.getMonth() + 1).padStart(2, "0")}-${now.getFullYear()}`,
+  );
   return L.join("\n");
 }
 
@@ -284,21 +460,29 @@ function subjectLine(state: FormState): string {
 function SectionHeading({ n, title }: { n: string; title: string }) {
   return (
     <div className="flex items-center gap-4 mb-8">
-      <span className="font-headline italic text-3xl text-[#FE5545]">{n}</span>
-      <h2 className="font-headline italic text-3xl text-[#1A1A1A]">{title}</h2>
+      <span className="t-section text-[#FE5545]">{n}</span>
+      <h2 className="t-section text-[#1A1A1A]">{title}</h2>
     </div>
   );
 }
 
-function Chip({ label, active, onClick }: { label: string; active: boolean; onClick: () => void }) {
+function Chip({
+  label,
+  active,
+  onClick,
+}: {
+  label: string;
+  active: boolean;
+  onClick: () => void;
+}) {
   return (
     <button
       type="button"
       onClick={onClick}
       className={
         active
-          ? "font-label font-semibold uppercase tracking-[0.15em] text-[10px] bg-[#FE5545] text-white px-4 py-2.5"
-          : "font-label font-semibold uppercase tracking-[0.15em] text-[10px] text-[#6B6B6B] border border-[#E4DED4] px-4 py-2.5 hover:border-[#FE5545] hover:text-[#1A1A1A] transition-colors duration-300"
+          ? "t-action leading-snug bg-[#FE5545] text-white px-4 py-2.5"
+          : "t-action leading-snug text-[#6B6B6B] border border-[#E4DED4] px-4 py-2.5 hover:border-[#FE5545] hover:text-[#1A1A1A] transition-colors duration-300"
       }
     >
       {label}
@@ -323,10 +507,15 @@ function CountChips({
   for (let n = min; n <= max; n++) options.push(n);
   return (
     <div className="mb-8">
-      <p className="font-label font-semibold uppercase tracking-[0.15em] text-[10px] text-[#6B6B6B] mb-3">{label}</p>
+      <p className="t-meta text-[#6B6B6B] mb-3">{label}</p>
       <div className="flex flex-wrap gap-2">
         {options.map((n) => (
-          <Chip key={n} label={n === 0 ? "None" : String(n)} active={value === n} onClick={() => onChange(n)} />
+          <Chip
+            key={n}
+            label={n === 0 ? "None" : String(n)}
+            active={value === n}
+            onClick={() => onChange(n)}
+          />
         ))}
       </div>
     </div>
@@ -336,7 +525,8 @@ function CountChips({
 function RequiredMark() {
   return (
     <span className="text-[#FE5545]" aria-hidden="true">
-      {" "}*
+      {" "}
+      *
     </span>
   );
 }
@@ -379,16 +569,17 @@ function TextField({
   hintOk,
   listOptions,
 }: FieldProps) {
-  const listId = listOptions && listOptions.length > 0 ? `${id}-list` : undefined;
+  const listId =
+    listOptions && listOptions.length > 0 ? `${id}-list` : undefined;
   return (
     <div className="flex flex-col gap-2 min-w-0">
-      <label htmlFor={id} className="font-label font-semibold uppercase tracking-[0.15em] text-[10px] text-[#6B6B6B]">
+      <label htmlFor={id} className="t-meta text-[#6B6B6B]">
         {label}
         {required && <RequiredMark />}
       </label>
       <div className="relative">
         {prefix && (
-          <span className="absolute left-0 top-1/2 -translate-y-1/2 font-mono text-sm text-[#1A1A1A]/40 pointer-events-none">
+          <span className="absolute left-0 top-1/2 -translate-y-1/2 t-body-sm text-[#1A1A1A]/40 pointer-events-none">
             {prefix}
           </span>
         )}
@@ -403,10 +594,12 @@ function TextField({
           onBlur={onBlur}
           placeholder={placeholder}
           autoComplete="off"
-          className={`w-full bg-transparent border-0 border-b py-2.5 text-sm text-[#1A1A1A] placeholder:text-black/25 focus:outline-none transition-colors ${
-            mono ? "font-mono" : "font-label"
+          className={`w-full bg-transparent border-0 border-b py-2.5 t-body leading-tight text-[#1A1A1A] placeholder:text-black/25 focus:outline-none transition-colors ${
+            mono ? "tabular-nums" : ""
           } ${prefix ? "pl-7" : "pl-0"} ${unit ? "pr-16" : "pr-0"} ${
-            error ? "border-[#FE5545]" : "border-[#E4DED4] focus:border-[#FE5545]"
+            error
+              ? "border-[#FE5545]"
+              : "border-[#E4DED4] focus:border-[#FE5545]"
           }`}
         />
         {listId && (
@@ -417,17 +610,17 @@ function TextField({
           </datalist>
         )}
         {unit && (
-          <span className="absolute right-0 top-1/2 -translate-y-1/2 font-label text-[11px] text-[#6B6B6B] pointer-events-none">
+          <span className="absolute right-0 top-1/2 -translate-y-1/2 t-body-sm text-[#6B6B6B] pointer-events-none">
             {unit}
           </span>
         )}
       </div>
       {(error || hint) && (
         <div className="flex items-center justify-between gap-2">
-          {error && <p className="text-[11px] text-[#FE5545]">{error}</p>}
+          {error && <p className="t-body-sm text-[#FE5545]">{error}</p>}
           {hint && (
             <span
-              className={`ml-auto font-mono text-[11px] ${hintOk ? "text-[#1A9F5C]" : "text-[#6B6B6B]"}`}
+              className={`ml-auto t-meta tabular-nums ${hintOk ? "text-[#1A9F5C]" : "text-[#6B6B6B]"}`}
             >
               {hint}
             </span>
@@ -457,7 +650,7 @@ function TextAreaField({
 }) {
   return (
     <div className="flex flex-col gap-2 min-w-0">
-      <label htmlFor={id} className="font-label font-semibold uppercase tracking-[0.15em] text-[10px] text-[#6B6B6B]">
+      <label htmlFor={id} className="t-meta text-[#6B6B6B]">
         {label}
         {required && <RequiredMark />}
       </label>
@@ -467,11 +660,11 @@ function TextAreaField({
         value={value}
         onChange={(e) => onChange(e.target.value)}
         placeholder={placeholder}
-        className={`w-full bg-transparent border-0 border-b py-2.5 font-label text-sm text-[#1A1A1A] placeholder:text-black/25 focus:outline-none transition-colors resize-none ${
+        className={`w-full bg-transparent border-0 border-b py-2.5 t-body leading-snug text-[#1A1A1A] placeholder:text-black/25 focus:outline-none transition-colors resize-none ${
           error ? "border-[#FE5545]" : "border-[#E4DED4] focus:border-[#FE5545]"
         }`}
       />
-      {error && <p className="text-[11px] text-[#FE5545]">{error}</p>}
+      {error && <p className="t-body-sm text-[#FE5545]">{error}</p>}
     </div>
   );
 }
@@ -495,7 +688,7 @@ function SelectField({
 }) {
   return (
     <div className="flex flex-col gap-2 min-w-0">
-      <label htmlFor={id} className="font-label font-semibold uppercase tracking-[0.15em] text-[10px] text-[#6B6B6B]">
+      <label htmlFor={id} className="t-meta text-[#6B6B6B]">
         {label}
         {required && <RequiredMark />}
       </label>
@@ -503,7 +696,7 @@ function SelectField({
         id={id}
         value={value}
         onChange={(e) => onChange(e.target.value)}
-        className={`w-full bg-transparent border-0 border-b py-2.5 font-label text-sm text-[#1A1A1A] focus:outline-none transition-colors ${
+        className={`w-full bg-transparent border-0 border-b py-2.5 t-body leading-tight text-[#1A1A1A] focus:outline-none transition-colors ${
           error ? "border-[#FE5545]" : "border-[#E4DED4] focus:border-[#FE5545]"
         }`}
       >
@@ -514,7 +707,7 @@ function SelectField({
           </option>
         ))}
       </select>
-      {error && <p className="text-[11px] text-[#FE5545]">{error}</p>}
+      {error && <p className="t-body-sm text-[#FE5545]">{error}</p>}
     </div>
   );
 }
@@ -540,13 +733,18 @@ function PartyCard({
 }) {
   const idPrefix = `${group}-${index}-`;
   const label = group.charAt(0).toUpperCase() + group.slice(1);
-  const nameOptions = Array.from(new Set(contacts.map((c) => c.name.trim()).filter(Boolean))).sort();
+  const nameOptions = Array.from(
+    new Set(contacts.map((c) => c.name.trim()).filter(Boolean)),
+  ).sort();
 
   function handleNameChange(v: string) {
     onChange("name", v);
     const match = findContact(contacts, v);
     if (!match) return;
-    const fields: (keyof Party)[] = group === "witness" ? ["age", "aadhaar", "pan", "address"] : ["age", "occupation", "aadhaar", "pan", "address"];
+    const fields: (keyof Party)[] =
+      group === "witness"
+        ? ["age", "aadhaar", "pan", "address"]
+        : ["age", "occupation", "aadhaar", "pan", "address"];
     let filled = false;
     fields.forEach((f) => {
       if (!value[f] && match[f]) {
@@ -561,8 +759,10 @@ function PartyCard({
     <fieldset className="bg-white border border-[#E4DED4] p-6 md:p-8 mb-6">
       <legend className="flex items-center justify-between w-full gap-3 px-2">
         <span className="flex items-center gap-3">
-          <span className="font-headline italic text-2xl text-[#FE5545]">{String(index + 1).padStart(2, "0")}</span>
-          <span className="font-label font-semibold uppercase tracking-[0.2em] text-xs text-[#1A1A1A]/70">
+          <span className="t-card text-[#FE5545]">
+            {String(index + 1).padStart(2, "0")}
+          </span>
+          <span className="t-meta text-[#1A1A1A]/70">
             {label} {index + 1}
           </span>
         </span>
@@ -570,7 +770,7 @@ function PartyCard({
           <button
             type="button"
             onClick={onRemove}
-            className="font-label font-semibold uppercase tracking-[0.15em] text-[10px] text-[#6B6B6B] underline underline-offset-4 hover:text-[#FE5545] transition-colors"
+            className="t-action text-[#6B6B6B] underline underline-offset-4 hover:text-[#FE5545] transition-colors"
           >
             Remove
           </button>
@@ -649,12 +849,18 @@ function PartyCard({
   );
 }
 
-function AddPartyButton({ label, onClick }: { label: string; onClick: () => void }) {
+function AddPartyButton({
+  label,
+  onClick,
+}: {
+  label: string;
+  onClick: () => void;
+}) {
   return (
     <button
       type="button"
       onClick={onClick}
-      className="w-full flex items-center justify-center gap-2 py-4 font-label font-semibold uppercase tracking-[0.2em] text-xs border border-dashed border-[#E4DED4] text-[#6B6B6B] hover:border-[#FE5545] hover:text-[#1A1A1A] transition-colors duration-300"
+      className="w-full flex items-center justify-center gap-2 py-4 t-action border border-dashed border-[#E4DED4] text-[#6B6B6B] hover:border-[#FE5545] hover:text-[#1A1A1A] transition-colors duration-300"
     >
       <span className="text-[#FE5545]">+</span> {label}
     </button>
@@ -666,18 +872,28 @@ function PaymentCard({
   value,
   onChange,
   errors,
+  noun = "Payment",
+  idBase = "payment",
 }: {
   index: number;
   value: Payment;
   onChange: (key: keyof Payment, v: string) => void;
   errors: Record<string, string>;
+  /** "Refund" on a cancellation deed. */
+  noun?: string;
+  /** Prefix for field ids and error keys: "payment" or "refund". */
+  idBase?: string;
 }) {
-  const idPrefix = `payment-${index}-`;
+  const idPrefix = `${idBase}-${index}-`;
   return (
     <fieldset className="bg-white border border-[#E4DED4] p-6 md:p-8 mb-6">
       <legend className="flex items-center gap-3 px-2">
-        <span className="font-headline italic text-2xl text-[#FE5545]">{String(index + 1).padStart(2, "0")}</span>
-        <span className="font-label font-semibold uppercase tracking-[0.2em] text-xs text-[#1A1A1A]/70">Payment {index + 1}</span>
+        <span className="t-card text-[#FE5545]">
+          {String(index + 1).padStart(2, "0")}
+        </span>
+        <span className="t-meta text-[#1A1A1A]/70">
+          {noun} {index + 1}
+        </span>
       </legend>
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mt-4">
         <TextField
@@ -736,9 +952,15 @@ export default function DeedFormPage() {
   const [previewText, setPreviewText] = useState("");
   const [toastMsg, setToastMsg] = useState<string | null>(null);
   const [clearArmed, setClearArmed] = useState(false);
-  const toastTimer = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
-  const clearTimer = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
-  const saveTimer = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
+  const toastTimer = useRef<ReturnType<typeof setTimeout> | undefined>(
+    undefined,
+  );
+  const clearTimer = useRef<ReturnType<typeof setTimeout> | undefined>(
+    undefined,
+  );
+  const saveTimer = useRef<ReturnType<typeof setTimeout> | undefined>(
+    undefined,
+  );
 
   // Restore any in-progress form from this browser
   useEffect(() => {
@@ -764,15 +986,21 @@ export default function DeedFormPage() {
       } catch {
         /* storage unavailable */
       }
-      const complete = [...state.sellers, ...state.buyers, ...state.witnesses].filter(
-        (p) => p.name.trim() && onlyDigits(p.aadhaar).length === 12
-      );
+      const complete = [
+        ...state.sellers,
+        ...state.buyers,
+        ...state.witnesses,
+      ].filter((p) => p.name.trim() && onlyDigits(p.aadhaar).length === 12);
       if (complete.length === 0) return;
       setContacts((prev) => {
         const byAadhaar = new Map(prev.map((c) => [onlyDigits(c.aadhaar), c]));
         const now = Date.now();
-        complete.forEach((p) => byAadhaar.set(onlyDigits(p.aadhaar), { ...p, updatedAt: now }));
-        let next = Array.from(byAadhaar.values()).sort((a, b) => b.updatedAt - a.updatedAt);
+        complete.forEach((p) =>
+          byAadhaar.set(onlyDigits(p.aadhaar), { ...p, updatedAt: now }),
+        );
+        let next = Array.from(byAadhaar.values()).sort(
+          (a, b) => b.updatedAt - a.updatedAt,
+        );
         if (next.length > MAX_CONTACTS) next = next.slice(0, MAX_CONTACTS);
         try {
           localStorage.setItem(CONTACTS_KEY, JSON.stringify(next));
@@ -792,7 +1020,12 @@ export default function DeedFormPage() {
   function update(patch: Partial<FormState>) {
     setState((s) => ({ ...s, ...patch }));
   }
-  function updateParty(group: "sellers" | "buyers" | "witnesses", index: number, key: keyof Party, v: string) {
+  function updateParty(
+    group: "sellers" | "buyers" | "witnesses",
+    index: number,
+    key: keyof Party,
+    v: string,
+  ) {
     setState((s) => {
       const list = [...s[group]];
       list[index] = { ...list[index], [key]: v };
@@ -805,17 +1038,25 @@ export default function DeedFormPage() {
       return { ...s, [group]: [...s[group], emptyParty()] };
     });
   }
-  function removeParty(group: "sellers" | "buyers" | "witnesses", index: number) {
+  function removeParty(
+    group: "sellers" | "buyers" | "witnesses",
+    index: number,
+  ) {
     setState((s) => {
       if (s[group].length <= 1) return s;
       return { ...s, [group]: s[group].filter((_, i) => i !== index) };
     });
   }
-  function updatePayment(index: number, key: keyof Payment, v: string) {
+  function updatePayment(
+    group: "payments" | "refunds",
+    index: number,
+    key: keyof Payment,
+    v: string,
+  ) {
     setState((s) => {
-      const list = [...s.payments];
+      const list = [...s[group]];
       list[index] = { ...list[index], [key]: v };
-      return { ...s, payments: list };
+      return { ...s, [group]: list };
     });
   }
 
@@ -842,7 +1083,13 @@ export default function DeedFormPage() {
     }
     setPreviewText(buildText(state));
     setShowPanel(true);
-    setTimeout(() => document.getElementById("send-panel")?.scrollIntoView({ behavior: "smooth", block: "start" }), 50);
+    setTimeout(
+      () =>
+        document
+          .getElementById("send-panel")
+          ?.scrollIntoView({ behavior: "smooth", block: "start" }),
+      50,
+    );
   }
 
   async function handleCopy() {
@@ -876,6 +1123,8 @@ export default function DeedFormPage() {
   }
 
   const showDue = isATS(state.doc);
+  const cancelling = isCancellation(state.doc);
+  const unregisteredOk = isUnregisteredOption(state.cancelDoc);
   const waHref = `https://wa.me/${OFFICE.whatsapp}?text=${encodeURIComponent(previewText)}`;
   const mailHref = `mailto:${OFFICE.email}?subject=${encodeURIComponent(subjectLine(state))}&body=${encodeURIComponent(previewText)}`;
   const errorCount = Object.keys(errors).length;
@@ -887,55 +1136,269 @@ export default function DeedFormPage() {
       <section className="pt-40 pb-12 px-8 md:px-12">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-end">
           <div className="lg:col-span-8">
-            <p className="font-label font-semibold uppercase tracking-[0.3em] text-[11px] text-[#FE5545] mb-4">Client Intake</p>
-            <h1
-              className="font-headline italic leading-[0.9] tracking-tighter text-[#1A1A1A]"
-              style={{ fontSize: "clamp(2.75rem, 7vw, 5.5rem)" }}
-            >
-              Deed Details Form
-            </h1>
+            <p className="t-eyebrow text-[#FE5545] mb-4">Client Intake</p>
+            <h1 className="t-display-sm text-[#1A1A1A]">Deed Details Form</h1>
           </div>
           <div className="lg:col-span-4 lg:text-right pb-2">
-            <p className="max-w-sm lg:ml-auto font-light leading-relaxed text-sm text-[#6B6B6B]">
-              For Agreement to Sell (ATS) and Sale Deed. Fill every field below, then send it directly on WhatsApp.
+            <p className="measure-narrow lg:ml-auto t-body text-[#6B6B6B]">
+              For Agreement to Sell (ATS), Sale Deed, MOU and Cancellation Deed.
+              Fill every field below, then send it directly on WhatsApp.
             </p>
           </div>
         </div>
       </section>
 
       <form id="deedForm" noValidate autoComplete="off" onSubmit={handleSubmit}>
-        <section id="sec-doc" className="px-8 md:px-12 py-12 border-t border-[#E4DED4]">
+        <section
+          id="sec-doc"
+          className="px-8 md:px-12 py-12 border-t border-[#E4DED4]"
+        >
           <SectionHeading n="01" title="Document" />
-          <p className="font-label font-semibold uppercase tracking-[0.15em] text-[10px] text-[#6B6B6B] mb-4">
+          <p className="t-meta text-[#6B6B6B] mb-4">
             Which document is to be prepared?
             <RequiredMark />
           </p>
           <div id="doc" className="flex flex-wrap gap-3">
             {DOC_OPTIONS.map((opt) => (
-              <Chip key={opt} label={opt} active={state.doc === opt} onClick={() => update({ doc: opt })} />
+              <Chip
+                key={opt}
+                label={opt}
+                active={state.doc === opt}
+                onClick={() => update({ doc: opt })}
+              />
             ))}
           </div>
-          {errors.doc && <p className="text-[11px] text-[#FE5545] mt-3">{errors.doc}</p>}
+          {errors.doc && (
+            <p className="t-body-sm text-[#FE5545] mt-3">{errors.doc}</p>
+          )}
+
+          {/* Shown only for a cancellation deed: which document it cancels.
+              Kept inside section 01 so the numbering of the sections below
+              does not shift when it appears. */}
+          {cancelling && (
+            <div className="mt-10 border-l-2 border-[#FE5545] pl-5 md:pl-6">
+              <p className="t-card text-[#1A1A1A] mb-1">
+                Document being cancelled
+              </p>
+              <p className="t-body-sm text-[#6B6B6B] mb-6">
+                The earlier document between the same parties that this deed
+                cancels.
+              </p>
+              <p className="t-meta text-[#6B6B6B] mb-4">
+                Which document is being cancelled?
+                <RequiredMark />
+              </p>
+              <div id="cancelDoc" className="flex flex-wrap gap-3 mb-8">
+                {CANCEL_DOC_OPTIONS.map((opt) => (
+                  <Chip
+                    key={opt}
+                    label={opt}
+                    active={state.cancelDoc === opt}
+                    onClick={() => update({ cancelDoc: opt })}
+                  />
+                ))}
+              </div>
+              {errors.cancelDoc && (
+                <p className="t-body-sm text-[#FE5545] -mt-5 mb-8">
+                  {errors.cancelDoc}
+                </p>
+              )}
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-x-8 gap-y-8">
+                <TextField
+                  id="cancelDate"
+                  label="Date of That Document"
+                  type="date"
+                  mono
+                  value={state.cancelDate}
+                  onChange={(v) => update({ cancelDate: v })}
+                  error={errors.cancelDate}
+                  required
+                />
+                <TextField
+                  id="cancelRegNo"
+                  label="Registration / Serial No."
+                  placeholder={
+                    unregisteredOk
+                      ? "Leave blank if not notarised or registered"
+                      : "e.g. 4521/2024"
+                  }
+                  mono
+                  value={state.cancelRegNo}
+                  onChange={(v) => update({ cancelRegNo: v })}
+                  error={errors.cancelRegNo}
+                  required={!unregisteredOk}
+                />
+                <TextField
+                  id="cancelOffice"
+                  label="Sub-Registrar Office / Notary"
+                  placeholder={
+                    unregisteredOk
+                      ? "Leave blank if not notarised or registered"
+                      : "e.g. Sub-Registrar, Dholera"
+                  }
+                  value={state.cancelOffice}
+                  onChange={(v) => update({ cancelOffice: v })}
+                  error={errors.cancelOffice}
+                  required={!unregisteredOk}
+                />
+                <TextField
+                  id="cancelPaid"
+                  label="Paid by Buyers Under It (0 if none)"
+                  placeholder="e.g. 5,00,000 or 0"
+                  mono
+                  inputMode="numeric"
+                  prefix="Rs."
+                  value={state.cancelPaid}
+                  onChange={(v) => update({ cancelPaid: v })}
+                  onBlur={() =>
+                    update({ cancelPaid: fmtINR(state.cancelPaid) })
+                  }
+                  error={errors.cancelPaid}
+                  required
+                />
+              </div>
+              <p className="t-meta text-[#6B6B6B] mt-8 mb-4">
+                Was possession of the land given to the buyers under that
+                document?
+                <RequiredMark />
+              </p>
+              <div id="cancelPossession" className="flex flex-wrap gap-3">
+                {["Yes", "No"].map((opt) => (
+                  <Chip
+                    key={opt}
+                    label={opt}
+                    active={state.cancelPossession === opt}
+                    onClick={() => update({ cancelPossession: opt })}
+                  />
+                ))}
+              </div>
+              {errors.cancelPossession && (
+                <p className="t-body-sm text-[#FE5545] mt-3">
+                  {errors.cancelPossession}
+                </p>
+              )}
+              <div className="mt-8">
+                <TextAreaField
+                  id="cancelReason"
+                  label="Reason for Cancellation"
+                  placeholder="Optional — e.g. balance not paid by the due date, mutual decision"
+                  value={state.cancelReason}
+                  onChange={(v) => update({ cancelReason: v })}
+                />
+              </div>
+            </div>
+          )}
         </section>
 
-        <section id="sec-land" className="px-8 md:px-12 py-12 border-t border-[#E4DED4]">
+        <section
+          id="sec-land"
+          className="px-8 md:px-12 py-12 border-t border-[#E4DED4]"
+        >
           <SectionHeading n="02" title="Land" />
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-x-8 gap-y-8">
-            <TextField id="village" label="Village" placeholder="e.g. Sangasar" value={state.village} onChange={(v) => update({ village: v })} error={errors.village} required />
-            <TextField id="taluka" label="Taluka" placeholder="e.g. Dholera" value={state.taluka} onChange={(v) => update({ taluka: v })} error={errors.taluka} required />
-            <TextField id="district" label="District" placeholder="e.g. Ahmedabad" value={state.district} onChange={(v) => update({ district: v })} error={errors.district} required />
-            <TextField id="surveyNew" label="Survey No. (New)" placeholder="e.g. 125/2 or 410 Paiki 1" mono value={state.surveyNew} onChange={(v) => update({ surveyNew: v })} error={errors.surveyNew} required />
-            <TextField id="surveyOld" label="Survey No. (Old)" placeholder="Old number, if any" mono value={state.surveyOld} onChange={(v) => update({ surveyOld: v })} />
-            <TextField id="area" label="Sellable Area" placeholder="e.g. 10000" mono inputMode="decimal" unit="sq. mtrs" value={state.area} onChange={(v) => update({ area: v })} error={errors.area} required />
-            <TextField id="zone" label="Zone" placeholder="e.g. Residential" value={state.zone} onChange={(v) => update({ zone: v })} />
-            <TextField id="tp" label="TP Scheme No." placeholder="e.g. 3" mono value={state.tp} onChange={(v) => update({ tp: v })} />
-            <TextField id="fp" label="Final Plot No." placeholder="e.g. 210" mono value={state.fp} onChange={(v) => update({ fp: v })} />
-            <TextField id="fpSize" label="Final Plot Size" placeholder="e.g. 5000" mono inputMode="decimal" unit="sq. mtrs" value={state.fpSize} onChange={(v) => update({ fpSize: v })} />
+            <TextField
+              id="village"
+              label="Village"
+              placeholder="e.g. Sangasar"
+              value={state.village}
+              onChange={(v) => update({ village: v })}
+              error={errors.village}
+              required
+            />
+            <TextField
+              id="taluka"
+              label="Taluka"
+              placeholder="e.g. Dholera"
+              value={state.taluka}
+              onChange={(v) => update({ taluka: v })}
+              error={errors.taluka}
+              required
+            />
+            <TextField
+              id="district"
+              label="District"
+              placeholder="e.g. Ahmedabad"
+              value={state.district}
+              onChange={(v) => update({ district: v })}
+              error={errors.district}
+              required
+            />
+            <TextField
+              id="surveyNew"
+              label="Survey No. (New)"
+              placeholder="e.g. 125/2 or 410 Paiki 1"
+              mono
+              value={state.surveyNew}
+              onChange={(v) => update({ surveyNew: v })}
+              error={errors.surveyNew}
+              required
+            />
+            <TextField
+              id="surveyOld"
+              label="Survey No. (Old)"
+              placeholder="Old number, if any"
+              mono
+              value={state.surveyOld}
+              onChange={(v) => update({ surveyOld: v })}
+            />
+            <TextField
+              id="area"
+              label="Sellable Area"
+              placeholder="e.g. 10000"
+              mono
+              inputMode="decimal"
+              unit="sq. mtrs"
+              value={state.area}
+              onChange={(v) => update({ area: v })}
+              error={errors.area}
+              required
+            />
+            <TextField
+              id="zone"
+              label="Zone"
+              placeholder="e.g. Residential"
+              value={state.zone}
+              onChange={(v) => update({ zone: v })}
+            />
+            <TextField
+              id="tp"
+              label="TP Scheme No."
+              placeholder="e.g. 3"
+              mono
+              value={state.tp}
+              onChange={(v) => update({ tp: v })}
+            />
+            <TextField
+              id="fp"
+              label="Final Plot No."
+              placeholder="e.g. 210"
+              mono
+              value={state.fp}
+              onChange={(v) => update({ fp: v })}
+            />
+            <TextField
+              id="fpSize"
+              label="Final Plot Size"
+              placeholder="e.g. 5000"
+              mono
+              inputMode="decimal"
+              unit="sq. mtrs"
+              value={state.fpSize}
+              onChange={(v) => update({ fpSize: v })}
+            />
           </div>
         </section>
 
-        <section id="sec-seller" className="px-8 md:px-12 py-12 border-t border-[#E4DED4]">
+        <section
+          id="sec-seller"
+          className="px-8 md:px-12 py-12 border-t border-[#E4DED4]"
+        >
           <SectionHeading n="03" title="Sellers" />
+          {cancelling && (
+            <p className="t-body-sm text-[#6B6B6B] -mt-4 mb-8">
+              The sellers named in the document being cancelled.
+            </p>
+          )}
           {state.sellers.map((p, i) => (
             <PartyCard
               key={i}
@@ -944,16 +1407,31 @@ export default function DeedFormPage() {
               value={p}
               onChange={(k, v) => updateParty("sellers", i, k, v)}
               errors={errors}
-              onRemove={state.sellers.length > 1 ? () => removeParty("sellers", i) : undefined}
+              onRemove={
+                state.sellers.length > 1
+                  ? () => removeParty("sellers", i)
+                  : undefined
+              }
               contacts={contacts}
               onAutofill={toast}
             />
           ))}
-          <AddPartyButton label="Add Another Seller" onClick={() => addParty("sellers")} />
+          <AddPartyButton
+            label="Add Another Seller"
+            onClick={() => addParty("sellers")}
+          />
         </section>
 
-        <section id="sec-buyer" className="px-8 md:px-12 py-12 border-t border-[#E4DED4]">
+        <section
+          id="sec-buyer"
+          className="px-8 md:px-12 py-12 border-t border-[#E4DED4]"
+        >
           <SectionHeading n="04" title="Buyers" />
+          {cancelling && (
+            <p className="t-body-sm text-[#6B6B6B] -mt-4 mb-8">
+              The buyers named in the document being cancelled.
+            </p>
+          )}
           {state.buyers.map((p, i) => (
             <PartyCard
               key={i}
@@ -962,15 +1440,25 @@ export default function DeedFormPage() {
               value={p}
               onChange={(k, v) => updateParty("buyers", i, k, v)}
               errors={errors}
-              onRemove={state.buyers.length > 1 ? () => removeParty("buyers", i) : undefined}
+              onRemove={
+                state.buyers.length > 1
+                  ? () => removeParty("buyers", i)
+                  : undefined
+              }
               contacts={contacts}
               onAutofill={toast}
             />
           ))}
-          <AddPartyButton label="Add Another Buyer" onClick={() => addParty("buyers")} />
+          <AddPartyButton
+            label="Add Another Buyer"
+            onClick={() => addParty("buyers")}
+          />
         </section>
 
-        <section id="sec-witness" className="px-8 md:px-12 py-12 border-t border-[#E4DED4]">
+        <section
+          id="sec-witness"
+          className="px-8 md:px-12 py-12 border-t border-[#E4DED4]"
+        >
           <SectionHeading n="05" title="Witnesses" />
           {state.witnesses.map((p, i) => (
             <PartyCard
@@ -980,58 +1468,156 @@ export default function DeedFormPage() {
               value={p}
               onChange={(k, v) => updateParty("witnesses", i, k, v)}
               errors={errors}
-              onRemove={state.witnesses.length > 1 ? () => removeParty("witnesses", i) : undefined}
+              onRemove={
+                state.witnesses.length > 1
+                  ? () => removeParty("witnesses", i)
+                  : undefined
+              }
               contacts={contacts}
               onAutofill={toast}
             />
           ))}
           {state.witnesses.length < WITNESS_MAX && (
-            <AddPartyButton label="Add Another Witness" onClick={() => addParty("witnesses")} />
+            <AddPartyButton
+              label="Add Another Witness"
+              onClick={() => addParty("witnesses")}
+            />
           )}
         </section>
 
-        <section id="sec-payment" className="px-8 md:px-12 py-12 border-t border-[#E4DED4]">
-          <SectionHeading n="06" title="Payment" />
+        <section
+          id="sec-payment"
+          className="px-8 md:px-12 py-12 border-t border-[#E4DED4]"
+        >
+          <SectionHeading n="06" title={cancelling ? "Refund" : "Payment"} />
           <div className="grid grid-cols-1 md:grid-cols-2 gap-x-10 gap-y-8 mb-8">
-            <TextField
-              id="consideration"
-              label="Total Consideration"
-              placeholder="e.g. 50,00,000"
-              mono
-              inputMode="numeric"
-              prefix="Rs."
-              value={state.consideration}
-              onChange={(v) => update({ consideration: v })}
-              onBlur={() => update({ consideration: fmtINR(state.consideration) })}
-              error={errors.consideration}
-              required
-            />
+            {cancelling ? (
+              <TextField
+                id="refundAmount"
+                label="Refund Amount (0 if none)"
+                placeholder="e.g. 5,00,000 or 0"
+                mono
+                inputMode="numeric"
+                prefix="Rs."
+                value={state.refundAmount}
+                onChange={(v) => update({ refundAmount: v })}
+                onBlur={() =>
+                  update({ refundAmount: fmtINR(state.refundAmount) })
+                }
+                error={errors.refundAmount}
+                required
+              />
+            ) : (
+              <TextField
+                id="consideration"
+                label="Total Consideration"
+                placeholder="e.g. 50,00,000"
+                mono
+                inputMode="numeric"
+                prefix="Rs."
+                value={state.consideration}
+                onChange={(v) => update({ consideration: v })}
+                onBlur={() =>
+                  update({ consideration: fmtINR(state.consideration) })
+                }
+                error={errors.consideration}
+                required
+              />
+            )}
             {showDue && (
-              <TextField id="dueDate" label="Payment Due Date" type="date" mono value={state.dueDate} onChange={(v) => update({ dueDate: v })} error={errors.dueDate} required />
+              <TextField
+                id="dueDate"
+                label="Payment Due Date"
+                type="date"
+                mono
+                value={state.dueDate}
+                onChange={(v) => update({ dueDate: v })}
+                error={errors.dueDate}
+                required
+              />
             )}
           </div>
-          <CountChips min={0} max={PAYMENT_MAX} value={state.paymentCount} onChange={(n) => update({ paymentCount: n })} label="Payments already made?" />
-          {Array.from({ length: state.paymentCount }).map((_, i) => (
-            <PaymentCard key={i} index={i} value={state.payments[i]} onChange={(k, v) => updatePayment(i, k, v)} errors={errors} />
-          ))}
+          {cancelling ? (
+            <>
+              <CountChips
+                min={0}
+                max={PAYMENT_MAX}
+                value={state.refundCount}
+                onChange={(n) => update({ refundCount: n })}
+                label="Refunds already paid?"
+              />
+              {Array.from({ length: state.refundCount }).map((_, i) => (
+                <PaymentCard
+                  key={i}
+                  index={i}
+                  value={state.refunds[i]}
+                  onChange={(k, v) => updatePayment("refunds", i, k, v)}
+                  errors={errors}
+                  noun="Refund"
+                  idBase="refund"
+                />
+              ))}
+            </>
+          ) : (
+            <>
+              <CountChips
+                min={0}
+                max={PAYMENT_MAX}
+                value={state.paymentCount}
+                onChange={(n) => update({ paymentCount: n })}
+                label="Payments already made?"
+              />
+              {Array.from({ length: state.paymentCount }).map((_, i) => (
+                <PaymentCard
+                  key={i}
+                  index={i}
+                  value={state.payments[i]}
+                  onChange={(k, v) => updatePayment("payments", i, k, v)}
+                  errors={errors}
+                />
+              ))}
+            </>
+          )}
         </section>
 
-        <section id="sec-send" className="px-8 md:px-12 py-12 border-t border-[#E4DED4]">
+        <section
+          id="sec-send"
+          className="px-8 md:px-12 py-12 border-t border-[#E4DED4]"
+        >
           <SectionHeading n="07" title="Send" />
           <div className="grid grid-cols-1 md:grid-cols-2 gap-x-10 gap-y-8 mb-10">
-            <TextField id="senderName" label="Your Name" placeholder="Person filling this form" value={state.senderName} onChange={(v) => update({ senderName: v })} error={errors.senderName} required />
-            <TextField id="senderMobile" label="Your Mobile No." placeholder="10-digit mobile" type="tel" mono inputMode="tel" value={state.senderMobile} onChange={(v) => update({ senderMobile: v })} error={errors.senderMobile} required />
+            <TextField
+              id="senderName"
+              label="Your Name"
+              placeholder="Person filling this form"
+              value={state.senderName}
+              onChange={(v) => update({ senderName: v })}
+              error={errors.senderName}
+              required
+            />
+            <TextField
+              id="senderMobile"
+              label="Your Mobile No."
+              placeholder="10-digit mobile"
+              type="tel"
+              mono
+              inputMode="tel"
+              value={state.senderMobile}
+              onChange={(v) => update({ senderMobile: v })}
+              error={errors.senderMobile}
+              required
+            />
           </div>
 
           <button
             type="submit"
-            className="w-full bg-[#FE5545] text-white px-8 py-5 font-label font-semibold uppercase tracking-[0.25em] text-sm hover:bg-[#1A1A1A] hover:text-[#FAF7F2] transition-colors duration-300"
+            className="w-full bg-[#FE5545] text-white px-8 py-5 t-action hover:bg-[#1A1A1A] hover:text-[#FAF7F2] transition-colors duration-300"
           >
             Review &amp; Send
           </button>
 
           {attempted && !showPanel && errorCount > 0 && (
-            <p className="mt-4 text-sm text-[#FE5545]" role="alert">
+            <p className="mt-4 t-body-sm text-[#FE5545]" role="alert">
               {errorCount === 1
                 ? "1 field still needs to be filled. It is marked above."
                 : `${errorCount} fields still need to be filled. They are marked above.`}
@@ -1040,7 +1626,7 @@ export default function DeedFormPage() {
 
           {showPanel && (
             <div id="send-panel" className="mt-10">
-              <p className="font-label font-semibold uppercase tracking-[0.15em] text-[10px] text-[#6B6B6B] mb-4">
+              <p className="t-meta text-[#6B6B6B] mb-4">
                 Check the message, then send it.
               </p>
               <textarea
@@ -1048,38 +1634,46 @@ export default function DeedFormPage() {
                 value={previewText}
                 aria-label="Message to be sent"
                 spellCheck={false}
-                className="w-full min-h-[280px] max-h-[480px] bg-white border border-[#E4DED4] text-[#1A1A1A] p-5 font-mono text-xs md:text-sm leading-relaxed whitespace-pre-wrap resize-y focus:outline-none focus:border-[#FE5545]"
+                className="w-full min-h-[280px] max-h-[480px] bg-white border border-[#E4DED4] text-[#1A1A1A] p-5 t-body-sm whitespace-pre-wrap resize-y focus:outline-none focus:border-[#FE5545]"
               />
               <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mt-4">
                 <a
                   href={waHref}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="md:col-span-2 flex items-center justify-center gap-3 bg-[#FE5545] text-white px-8 py-4 font-label font-semibold uppercase tracking-[0.2em] text-xs hover:bg-[#1A1A1A] hover:text-[#FAF7F2] transition-colors duration-300"
+                  className="md:col-span-2 flex items-center justify-center gap-3 bg-[#FE5545] text-white px-8 py-4 t-action hover:bg-[#1A1A1A] hover:text-[#FAF7F2] transition-colors duration-300"
                 >
-                  <svg viewBox="0 0 24 24" aria-hidden="true" fill="currentColor" className="w-4 h-4">
+                  <svg
+                    viewBox="0 0 24 24"
+                    aria-hidden="true"
+                    fill="currentColor"
+                    className="w-4 h-4"
+                  >
                     <path d="M12.04 2a9.9 9.9 0 0 0-8.5 14.98L2 22l5.17-1.5A9.96 9.96 0 1 0 12.04 2Zm0 18.13a8.2 8.2 0 0 1-4.19-1.15l-.3-.18-3.07.89.9-2.99-.2-.31a8.2 8.2 0 1 1 6.86 3.74Zm4.5-6.14c-.25-.12-1.46-.72-1.69-.8-.23-.09-.39-.13-.56.12-.16.25-.64.8-.78.97-.14.16-.29.18-.54.06-.25-.12-1.04-.38-1.98-1.22-.73-.65-1.23-1.46-1.37-1.7-.14-.25-.02-.38.11-.5.11-.11.25-.29.37-.43.12-.14.16-.25.25-.41.08-.16.04-.31-.02-.43-.06-.12-.56-1.35-.77-1.85-.2-.48-.41-.42-.56-.43h-.48c-.16 0-.43.06-.66.31-.23.25-.86.84-.86 2.06s.88 2.39 1 2.56c.12.16 1.74 2.66 4.22 3.73.59.25 1.05.41 1.41.52.59.19 1.13.16 1.56.1.48-.07 1.46-.6 1.67-1.17.2-.58.2-1.07.14-1.17-.06-.1-.22-.16-.47-.29Z" />
                   </svg>
                   Send on WhatsApp
                 </a>
                 <a
                   href={mailHref}
-                  className="flex items-center justify-center gap-3 border border-[#E4DED4] text-[#1A1A1A] px-8 py-4 font-label font-semibold uppercase tracking-[0.2em] text-xs hover:border-[#FE5545] hover:text-[#FE5545] transition-colors duration-300"
+                  className="flex items-center justify-center gap-3 border border-[#E4DED4] text-[#1A1A1A] px-8 py-4 t-action hover:border-[#FE5545] hover:text-[#FE5545] transition-colors duration-300"
                 >
                   Send by Email
                 </a>
                 <button
                   type="button"
                   onClick={handleCopy}
-                  className="flex items-center justify-center gap-3 border border-[#E4DED4] text-[#1A1A1A] px-8 py-4 font-label font-semibold uppercase tracking-[0.2em] text-xs hover:border-[#FE5545] hover:text-[#FE5545] transition-colors duration-300"
+                  className="flex items-center justify-center gap-3 border border-[#E4DED4] text-[#1A1A1A] px-8 py-4 t-action hover:border-[#FE5545] hover:text-[#FE5545] transition-colors duration-300"
                 >
                   Copy Message
                 </button>
               </div>
               <div className="mt-6 bg-white border-l-2 border-[#FE5545] p-5">
-                <p className="text-sm leading-relaxed text-[#1A1A1A]/80">
-                  After sending, share <b className="text-[#1A1A1A] font-semibold">photos of Aadhaar card and PAN card</b> of
-                  every seller, buyer and witness on the same WhatsApp chat.
+                <p className="t-body-sm text-[#1A1A1A]/80">
+                  After sending, share{" "}
+                  <b className="text-[#1A1A1A] font-semibold">
+                    photos of Aadhaar card and PAN card
+                  </b>{" "}
+                  of every seller, buyer and witness on the same WhatsApp chat.
                 </p>
               </div>
             </div>
@@ -1089,7 +1683,7 @@ export default function DeedFormPage() {
             <button
               type="button"
               onClick={handleClear}
-              className="text-xs font-medium text-[#6B6B6B] underline underline-offset-4 hover:text-[#1A1A1A] transition-colors"
+              className="t-action text-[#6B6B6B] underline underline-offset-4 hover:text-[#1A1A1A] transition-colors"
             >
               {clearArmed ? "Tap again to clear everything" : "Clear this form"}
             </button>
@@ -1100,7 +1694,7 @@ export default function DeedFormPage() {
       <Footer />
 
       {toastMsg && (
-        <div className="fixed left-1/2 bottom-8 -translate-x-1/2 bg-[#1A1A1A] text-[#FAF7F2] px-5 py-2.5 font-label font-semibold text-xs uppercase tracking-wide z-[999]">
+        <div className="fixed left-1/2 bottom-8 -translate-x-1/2 bg-[#1A1A1A] text-[#FAF7F2] px-5 py-2.5 t-meta z-[999]">
           {toastMsg}
         </div>
       )}

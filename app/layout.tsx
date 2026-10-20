@@ -1,45 +1,126 @@
-import type { Metadata } from "next";
-import { Newsreader, Inter, Cormorant_Garamond } from "next/font/google";
+import type { Metadata, Viewport } from "next";
 import "./globals.css";
 import { ConvexClientProvider } from "./ConvexClientProvider";
 import TermsModal from "@/components/TermsModal";
 import { ScrollProgress } from "@/components/ui/scroll-progress";
 import { AnimationGateProvider } from "@/components/ui/animation-gate";
+import { JsonLd } from "@/components/seo/json-ld";
+import { siteGraph } from "@/lib/seo/schema";
+import { PRACTICE, SITE_URL } from "@/lib/seo/site";
+import { siteFont, serifFont } from "@/lib/fonts";
 
-const cormorant = Cormorant_Garamond({
-  subsets: ["latin"],
-  variable: "--font-cormorant",
-  style: ["italic"],
-  weight: ["400"],
-  display: "swap",
-});
-
-const newsreader = Newsreader({
-  subsets: ["latin"],
-  variable: "--font-newsreader",
-  style: ["normal", "italic"],
-  weight: ["400"],
-  display: "swap",
-});
-
-const inter = Inter({
-  subsets: ["latin"],
-  variable: "--font-inter",
-  display: "swap",
-});
 
 export const metadata: Metadata = {
-  title: "Adv. Krupal Savjani | Expert Land & Revenue Lawyer — Ahmedabad",
+  /**
+   * Required for every relative URL below (canonicals, OG images) to resolve
+   * to an absolute one. Without it Next.js cannot emit a canonical tag at all.
+   */
+  metadataBase: new URL(SITE_URL),
+
+  title: {
+    default: "Land & Revenue Advocate in Ahmedabad | Adv. Krupal P. Savjani",
+    template: "%s | Adv. Krupal Savjani",
+  },
   description:
-    "Expert Land & Revenue Lawyer in Ahmedabad, Gujarat. Specializing in land disputes, property documentation, revenue records, and court representation.",
-  keywords:
-    "lawyer ahmedabad, land dispute lawyer gujarat, revenue lawyer, property documentation ahmedabad, krupal savjani",
+    "Adv. Krupal P. Savjani — advocate in Ahmedabad practising land and revenue law. Land disputes, 7/12 Utara and record corrections, title verification, sale deeds and representation before the revenue authorities and the courts. Office at Makarba, Ahmedabad.",
+  keywords: [
+    "advocate in ahmedabad",
+    "best advocate in ahmedabad",
+    "advocate near makarba",
+    "advocate in gujarat",
+    "land dispute lawyer ahmedabad",
+    "property lawyer ahmedabad",
+    "revenue record lawyer ahmedabad",
+    "7/12 utara lawyer",
+    "krupal savjani advocate",
+  ],
+
+  applicationName: PRACTICE.name,
+  authors: [{ name: PRACTICE.name, url: SITE_URL }],
+  creator: PRACTICE.name,
+  publisher: PRACTICE.name,
+  category: "Legal Services",
+
+  alternates: {
+    canonical: "/",
+  },
+
+  openGraph: {
+    type: "website",
+    siteName: PRACTICE.name,
+    locale: "en_IN",
+    url: SITE_URL,
+    title: "Land & Revenue Advocate in Ahmedabad | Adv. Krupal P. Savjani",
+    description:
+      "Land disputes, revenue records, title verification and property documentation — a dedicated land and revenue practice in Ahmedabad, Gujarat.",
+    images: [
+      {
+        url: "/og-image.png",
+        width: 1200,
+        height: 630,
+        alt: "Adv. Krupal P. Savjani — Land & Revenue Law, Ahmedabad, Gujarat",
+      },
+    ],
+  },
+
+  twitter: {
+    card: "summary_large_image",
+    site: "@SavjaniKrupal",
+    creator: "@SavjaniKrupal",
+    title: "Land & Revenue Advocate in Ahmedabad | Adv. Krupal P. Savjani",
+    description:
+      "Land disputes, revenue records, title verification and property documentation in Ahmedabad, Gujarat.",
+    images: ["/og-image.png"],
+  },
+
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      "max-image-preview": "large",
+      "max-snippet": -1,
+      "max-video-preview": -1,
+    },
+  },
+
+  /** Set NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION to the token from Search Console. */
+  verification: process.env.NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION
+    ? { google: process.env.NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION }
+    : undefined,
+
+  icons: {
+    icon: [{ url: "/favicon.ico" }, { url: "/logo.svg", type: "image/svg+xml" }],
+    apple: [{ url: "/logo.svg" }],
+  },
+
+  other: {
+    /** Helps Google associate the page with the right place. */
+    "geo.region": "IN-GJ",
+    "geo.placename": "Makarba, Ahmedabad, Gujarat",
+    "geo.position": `${PRACTICE.geo.latitude};${PRACTICE.geo.longitude}`,
+    ICBM: `${PRACTICE.geo.latitude}, ${PRACTICE.geo.longitude}`,
+  },
+};
+
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+  themeColor: "#f6f4f0",
+  colorScheme: "light",
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en" className={`${newsreader.variable} ${inter.variable} ${cormorant.variable}`}>
+    <html
+      lang="en-IN"
+      className={`${siteFont.variable} ${serifFont.variable}`}
+    >
       <body className="font-body selection:bg-[#fe5545] selection:text-white">
+        {/* Sitewide entity graph: WebSite → LegalService → Person. */}
+        <JsonLd id="schema-site" data={siteGraph()} />
+
         {/* Global chrome — progress bar is a client component */}
         <ScrollProgress />
 

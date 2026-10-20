@@ -1,70 +1,175 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 import Image from "next/image";
 import { Navbar } from "@/components/ui/navbar";
 import { Footer } from "@/components/ui/footer";
-import { HeroReveal, FadeUp, StaggerContainer, StaggerItem } from "@/components/ui/animations";
+import { HeroReveal, FadeUp } from "@/components/ui/animations";
 import { WordReveal } from "@/components/ui/parallax";
-import { BackgroundPaths } from "@/components/ui/background-paths";
+import { LedgerIndex, LedgerPrompt } from "@/components/ui/practice-ledger";
+import { JsonLd } from "@/components/seo/json-ld";
+import { breadcrumbSchema, graph, webPageSchema } from "@/lib/seo/schema";
+import { PAGE_BY_PRACTICE_AREA, SERVICE_PAGES } from "@/lib/seo/locations";
+import { PRACTICE } from "@/lib/seo/site";
+import { LEDGER_AREAS, ledgerNo } from "@/lib/practice-ledger";
+
+export const metadata: Metadata = {
+  /*
+   * `absolute` — with the global "| Adv. Krupal Savjani" suffix this ran to 80
+   * rendered characters and Google truncated the useful half.
+   */
+  title: { absolute: "Practice Areas — Land & Revenue Law in Ahmedabad" },
+  description:
+    "Practice areas of Adv. Krupal P. Savjani, advocate in Ahmedabad: land dispute litigation, 7/12 Utara and revenue records, property documentation and title verification, land acquisition, agricultural land, N.A. conversion, tenancy and tenure, revenue appeals and court representation.",
+  keywords: [
+    "land dispute lawyer ahmedabad",
+    "revenue record lawyer ahmedabad",
+    "property documentation advocate ahmedabad",
+    "land acquisition lawyer gujarat",
+    "agricultural land lawyer gujarat",
+    "na conversion lawyer ahmedabad",
+    "tenancy tenure advocate gujarat",
+    "revenue tribunal advocate ahmedabad",
+  ],
+  alternates: { canonical: "/services" },
+  openGraph: {
+    type: "website",
+    url: "/services",
+    /*
+     * `absolute` — with the global "| Adv. Krupal Savjani" suffix this ran to 80
+     * rendered characters and Google truncated the useful half.
+     */
+    title: { absolute: "Practice Areas — Land & Revenue Law in Ahmedabad" },
+    description:
+      "Ten practice areas across land disputes, revenue records, property documentation and court representation in Ahmedabad and across Gujarat.",
+  },
+};
+
+/**
+ * Links a practice-area row to the page that is its detail page.
+ *
+ * This is the link that matters most for these ten pages: it is the
+ * in-content, keyword-anchored route from the hub to the spoke, which is how
+ * Google works out that `/land-acquisition-lawyer-in-gujarat` — not this
+ * row of `/services` — is the URL that owns that topic. It sits inside the
+ * row's <details>, so it is in the server HTML whether the row is open or not.
+ */
+function PracticeAreaGuideLink({ area }: { area: string }) {
+  const page = PAGE_BY_PRACTICE_AREA[area];
+  if (!page) return null;
+  // Anchor text carries the target page's primary phrase, not "read more".
+  const label = page.title.split(" | ")[0];
+  // The last word and the arrow share a nowrap span, so the arrow can never
+  // drop onto a line of its own.
+  const cut = label.lastIndexOf(" ");
+  const head = cut === -1 ? "" : label.slice(0, cut + 1);
+  const tail = cut === -1 ? label : label.slice(cut + 1);
+  return (
+    <div>
+      <p className="t-meta mb-1 text-[#161513]/70">Detailed guide</p>
+      {/* min-h-11 keeps the tap target at 44px; the rule sits on the text. */}
+      <Link
+        href={`/${page.slug}`}
+        className="t-action group inline-flex min-h-11 items-center text-accent-ink transition-colors duration-200 hover:text-[#161513]"
+      >
+        <span className="border-b border-accent-ink/40 pb-1.5 leading-normal transition-colors duration-200 group-hover:border-[#161513]">
+          {head}
+          <span className="whitespace-nowrap">
+            {tail}{" "}
+            <span
+              aria-hidden="true"
+              className="inline-block transition-transform duration-300 group-hover:translate-x-1.5"
+            >
+              →
+            </span>
+          </span>
+        </span>
+      </Link>
+    </div>
+  );
+}
 
 const stats = [
   { value: "Gujarat", label: "High Court & Revenue Tribunals" },
   { value: "500+", label: "Matters Resolved" },
 ];
 
+/*
+ * One grid for a ledger row's summary and, from xl up, for its open panel,
+ * so the photograph sits exactly under the area's name and the text under
+ * its summary. Below xl the summary drops under the name and the panel is a
+ * single column.
+ */
+const ROW_GRID =
+  "grid-cols-[2.25rem_minmax(0,1fr)_1.25rem] gap-x-3 md:grid-cols-[3.5rem_minmax(0,1fr)_2rem] md:gap-x-8 xl:grid-cols-[3.5rem_minmax(0,1.1fr)_minmax(0,1fr)_2rem] xl:gap-x-10";
+
 export default function ServicesPage() {
   return (
-    <main className="bg-[#131313] text-[#e2e2e2]">
+    <main className="bg-[#f6f4f0] text-[#161513]">
+      <JsonLd
+        id="schema-services"
+        data={graph(
+          webPageSchema({
+            path: "/services",
+            name: "Practice Areas — Land, Revenue & Property Law in Ahmedabad",
+            description:
+              "Practice areas of Adv. Krupal P. Savjani: land disputes, revenue records, property documentation, land acquisition, agricultural land, land-use conversion, tenancy and tenure, appeals and court representation.",
+          }),
+          breadcrumbSchema([
+            { name: "Home", path: "/" },
+            { name: "Practice Areas", path: "/services" },
+          ])
+        )}
+      />
+
       <Navbar />
 
       {/* ── Hero ────────────────────────────────────────────────── */}
-      <section className="relative min-h-screen flex flex-col justify-between overflow-hidden pt-36 pb-0">
-
-        {/* Animated lines background */}
-        <BackgroundPaths />
-
+      <section
+        data-rail
+        className="relative flex min-h-screen flex-col justify-between overflow-hidden pt-32 md:pt-36"
+      >
         {/* Ghost § legal symbol — decorative anchor */}
         <span
           aria-hidden="true"
-          className="absolute right-[-0.1em] top-[10%] font-headline italic text-[#e2e2e2] select-none pointer-events-none"
+          className="absolute right-[-0.1em] top-[10%] font-headline text-[#161513] select-none pointer-events-none"
           style={{ fontSize: "clamp(18rem, 40vw, 52rem)", opacity: 0.025, lineHeight: 1 }}
         >
           §
         </span>
 
-        {/* Top content */}
-        <div className="relative z-10 px-8 md:px-12 flex-1 flex flex-col justify-center">
+        <div className="relative z-10 flex flex-1 flex-col justify-center px-6 md:px-12">
           <HeroReveal delay={0.05}>
-            <div className="flex items-center gap-4 mb-10">
-              <span className="w-8 h-px bg-[#fe5545]" />
-              <p className="font-label uppercase tracking-[0.35em] text-[11px] text-[#fe5545]">
-                Expertise &amp; Mandate
-              </p>
+            <div className="mb-10 flex items-center gap-4">
+              <span className="h-px w-8 bg-[#fe5545]" />
+              <p className="t-eyebrow">Expertise &amp; Mandate</p>
             </div>
           </HeroReveal>
 
           <HeroReveal delay={0.15}>
-            <h1
-              className="font-headline italic leading-[0.85] tracking-tighter mb-12"
-              style={{ fontSize: "clamp(4rem, 12vw, 11rem)" }}
-            >
-              <WordReveal text="Architecting" delay={0.15} />
-              <br />
-              <WordReveal text="the Verdict." delay={0.3} />
+            {/* Display line keeps the brand voice; the H1 still has to say
+                what the page is and where, so both live in one heading. */}
+            <h1 className="mb-12">
+              <span className="t-display block">
+                <WordReveal text="Architecting" delay={0.15} />
+                <br />
+                <WordReveal text="the Verdict." delay={0.3} />
+              </span>
+              <span className="t-hero-sub measure-wide mt-7 block">
+                Practice areas — land, revenue &amp; property law in Ahmedabad, Gujarat
+              </span>
             </h1>
           </HeroReveal>
 
           <HeroReveal delay={0.4}>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-12 items-start max-w-5xl">
-              <p className="text-[#c6c6c7] text-lg leading-relaxed font-light">
+            <div className="grid max-w-5xl grid-cols-1 items-start gap-10 md:grid-cols-2 md:gap-12">
+              <p className="t-lede measure">
                 We operate at the intersection of legal precision and strategic dominance. Our
                 services are tailored for those who require more than representation — they require
                 an architect of resolution.
               </p>
               <div className="flex flex-col gap-4 md:items-end md:text-right">
-                <p className="font-label uppercase tracking-[0.25em] text-[10px] text-[#e2e2e2]/30">
-                  Jurisdiction
-                </p>
-                <p className="font-headline italic text-2xl text-[#e3beb9]">
+                <p className="t-meta">Jurisdiction</p>
+                <p className="t-card text-[#5c4a46]">
                   Gujarat Revenue Courts<br />& High Court
                 </p>
               </div>
@@ -74,578 +179,233 @@ export default function ServicesPage() {
 
         {/* Stats bar pinned to bottom */}
         <FadeUp delay={0.2} className="relative z-10 mt-12">
-          <div className="border-t border-[#5b403c]/20 grid grid-cols-2">
+          <div className="grid grid-cols-2 border-t border-[#cdc6b9]/60 md:grid-cols-3">
             {stats.map((s, i) => (
               <div
-                key={i}
-                className="px-8 md:px-12 py-10 border-r border-[#5b403c]/15 last:border-r-0"
+                key={s.value}
+                className={`border-[#cdc6b9]/50 px-6 py-8 md:border-r md:px-12 md:py-10 ${
+                  i === 0 ? "border-r" : ""
+                }`}
               >
-                <p className="font-headline italic text-4xl md:text-5xl text-[#e2e2e2] mb-2">
-                  {s.value}
-                </p>
-                <p className="font-label uppercase tracking-[0.2em] text-[9px] text-[#e2e2e2]/35">
-                  {s.label}
-                </p>
+                <p className="t-section mb-2 text-[#161513]">{s.value}</p>
+                <p className="t-meta">{s.label}</p>
               </div>
             ))}
+            <a
+              href="#ledger"
+              className="group col-span-2 block border-t border-[#cdc6b9]/50 px-6 py-8 md:col-span-1 md:border-t-0 md:px-12 md:py-10"
+            >
+              <span className="mb-2 flex items-baseline gap-3">
+                <span className="t-section text-[#161513] transition-colors duration-200 group-hover:text-[#fe5545]">
+                  {LEDGER_AREAS.length}
+                </span>
+                <span aria-hidden="true" className="t-section text-[#fe5545]">
+                  ↓
+                </span>
+              </span>
+              <span className="t-meta block">Practice areas — see the ledger</span>
+            </a>
           </div>
         </FadeUp>
       </section>
 
-      {/* ── Service 01: Land Dispute Litigation ─────────────────── */}
-      <section className="relative min-h-screen flex flex-col justify-center mb-16 group">
-        <div className="absolute inset-0 z-0 opacity-30 grayscale group-hover:grayscale-0 transition-all duration-700 overflow-hidden">
-          <Image
-            src="https://images.unsplash.com/photo-1589994965851-a8f479c573a9?w=1600&q=85"
-            alt="Legal documents and pen"
-            fill
-            sizes="100vw"
-            className="object-cover"
-          />
-          <div className="absolute inset-0 bg-gradient-to-t from-[#131313] via-[#131313]/30 to-transparent" />
-        </div>
-        <div className="relative z-10 px-8 md:px-12">
-          <span className="font-label uppercase tracking-[0.4em] text-[10px] text-[#ffb4a9] mb-4 block">
-            Practice Area 01
-          </span>
-          <h2
-            className="font-headline italic leading-none tracking-tighter text-[#e2e2e2] mb-12"
-            style={{ fontSize: "clamp(2.5rem, 7vw, 6rem)" }}
-          >
-            LAND DISPUTE<br />LITIGATION
-          </h2>
-          <div className="flex flex-col md:flex-row gap-20 items-start">
-            <div className="w-full md:w-1/3 flex flex-col gap-6">
-              <div className="h-px w-full bg-[#5b403c]/30" />
-              <ul className="space-y-4">
-                {[
-                  "Ownership & Possession Disputes",
-                  "Boundary &amp; Encroachment Matters",
-                  "Agricultural Land Conflicts",
-                ].map((item, i) => (
-                  <li key={i} className="flex items-center gap-4 group/item">
-                    <span className="text-[#ffb4a9] font-headline italic text-xl">
-                      {String(i + 1).padStart(2, "0")}.
-                    </span>
-                    <span
-                      className="font-label uppercase tracking-widest text-xs text-[#c6c6c7] group-hover/item:text-[#e2e2e2] transition-colors"
-                      dangerouslySetInnerHTML={{ __html: item }}
-                    />
-                  </li>
-                ))}
-              </ul>
-            </div>
-            <div className="max-w-md pt-6">
-              <p className="text-[#c6c6c7]/70 leading-relaxed text-sm tracking-wide">
-                The revenue court is not a place for ambiguity; it is a place for evidence-backed
-                authority. We enter every dispute with a meticulous map of the record chain and
-                a singular focus on securing your rightful interest in the land.
-              </p>
-            </div>
+      {/* ── The Ledger ──────────────────────────────────────────── */}
+      <section
+        id="ledger"
+        data-rail
+        aria-label="Practice areas"
+        className="bg-[#ece2cf] px-6 py-20 md:px-12 md:py-28"
+      >
+        <div className="mb-12 grid grid-cols-1 items-end gap-6 md:mb-16 md:grid-cols-[1fr_auto] md:gap-8">
+          <div>
+            <p className="t-eyebrow flex items-center gap-4 text-accent-ink">
+              <span className="h-px w-8 bg-[#e0472f]" />
+              Ten areas · Thirty matters
+            </p>
+            <p className="t-serif-display mt-5">The Ledger</p>
           </div>
+          <p className="t-body-sm measure-narrow text-[#161513]/75 md:text-right">
+            Open any area to see what it covers, the matters we take on, and the
+            detailed guide for it.
+          </p>
         </div>
-      </section>
 
-      {/* ── Service 02: Revenue Records ──────────────────────────── */}
-      <section className="relative min-h-screen flex flex-col justify-center mb-16 group">
-        <div className="absolute inset-0 z-0 opacity-30 grayscale group-hover:grayscale-0 transition-all duration-700 overflow-hidden">
-          <Image
-            src="https://images.unsplash.com/photo-1554224155-6726b3ff858f?w=1600&q=85"
-            alt="Revenue documents and records"
-            fill
-            sizes="100vw"
-            className="object-cover"
-          />
-          <div className="absolute inset-0 bg-gradient-to-b from-[#131313] via-[#131313]/20 to-[#131313]" />
-        </div>
-        <div className="relative z-10 px-8 md:px-12 text-right">
-          <div className="flex flex-col items-end">
-            <span className="font-label uppercase tracking-[0.4em] text-[10px] text-[#ffb4a9] mb-4 block">
-              Practice Area 02
-            </span>
-            <h2
-              className="font-headline italic leading-none tracking-tighter text-[#e2e2e2] mb-12"
-              style={{ fontSize: "clamp(2.5rem, 7vw, 6rem)" }}
-            >
-              REVENUE<br />RECORDS
-            </h2>
-          </div>
-          <div className="flex flex-col md:flex-row-reverse gap-20 items-start">
-            <div className="w-full md:w-1/3 flex flex-col gap-6 text-right">
-              <div className="h-px w-full bg-[#5b403c]/30" />
-              <ul className="space-y-4">
-                {[
-                  ["7/12 Utara Corrections", "04."],
-                  ["8-A & Village Form Disputes", "05."],
-                  ["Mutation & Entry Proceedings", "06."],
-                ].map(([item, num], i) => (
-                  <li key={i} className="flex items-center justify-end gap-4 group/item">
-                    <span className="font-label uppercase tracking-widest text-xs text-[#c6c6c7] group-hover/item:text-[#e2e2e2] transition-colors">
-                      {item}
-                    </span>
-                    <span className="text-[#ffb4a9] font-headline italic text-xl">{num}</span>
-                  </li>
-                ))}
-              </ul>
-            </div>
-            <div className="max-w-md pt-6 text-right ml-auto">
-              <p className="text-[#c6c6c7]/70 leading-relaxed text-sm tracking-wide">
-                Preventing the error in the record is far more valuable than correcting it through
-                litigation. We provide the clinical foresight needed to maintain accurate revenue
-                records and contest erroneous entries with absolute precision.
-              </p>
-            </div>
-          </div>
-        </div>
-      </section>
+        {/* The index column is a little wider at lg, where 3/12 left most
+            area names wrapping onto two lines. */}
+        <div className="lg:grid lg:grid-cols-[minmax(0,3.6fr)_minmax(0,8.4fr)] lg:gap-x-10 xl:grid-cols-[minmax(0,3fr)_minmax(0,9fr)] xl:gap-x-16">
+          {/* The side index — and, mounted at every width, the behaviour the
+              rows need (first row open on desktop, deep links). Below lg the
+              rows themselves are the index, so it is not shown. */}
+          <aside className="hidden lg:block">
+            <LedgerIndex
+              items={LEDGER_AREAS.map(({ slug, name }) => ({ slug, name }))}
+            />
+          </aside>
 
-      {/* ── Service 03: Property Documentation ──────────────────── */}
-      <section className="relative min-h-screen flex flex-col justify-center mb-16 group">
-        <div className="absolute inset-0 z-0 opacity-30 grayscale group-hover:grayscale-0 transition-all duration-700 overflow-hidden">
-          <Image
-            src="https://images.unsplash.com/photo-1507679799987-c73779587ccf?w=1600&q=85"
-            alt="Property documentation"
-            fill
-            sizes="100vw"
-            className="object-cover"
-          />
-          <div className="absolute inset-0 bg-gradient-to-r from-[#131313] via-transparent to-[#131313]" />
-        </div>
-        <div className="relative z-10 px-8 md:px-12">
-          <span className="font-label uppercase tracking-[0.4em] text-[10px] text-[#ffb4a9] mb-4 block">
-            Practice Area 03
-          </span>
-          <h2
-            className="font-headline italic leading-none tracking-tighter text-[#e2e2e2] mb-12"
-            style={{ fontSize: "clamp(2.5rem, 7vw, 6rem)" }}
-          >
-            PROPERTY<br />DOCUMENTATION
-          </h2>
-          <div className="flex flex-col md:flex-row gap-20 items-start">
-            <div className="w-full md:w-1/3 flex flex-col gap-6">
-              <div className="h-px w-full bg-[#5b403c]/30" />
-              <ul className="space-y-4">
-                {[
-                  "Title Verification & Search",
-                  "Sale &amp; Gift Deed Drafting",
-                  "NOC &amp; Court Representation",
-                ].map((item, i) => (
-                  <li key={i} className="flex items-center gap-4 group/item">
-                    <span className="text-[#ffb4a9] font-headline italic text-xl">
-                      {String(i + 7).padStart(2, "0")}.
-                    </span>
-                    <span
-                      className="font-label uppercase tracking-widest text-xs text-[#c6c6c7] group-hover/item:text-[#e2e2e2] transition-colors"
-                      dangerouslySetInnerHTML={{ __html: item }}
-                    />
-                  </li>
-                ))}
-              </ul>
-            </div>
-            <div className="max-w-md pt-6">
-              <p className="text-[#c6c6c7]/70 leading-relaxed text-sm tracking-wide">
-                In property law, your most vulnerable asset is a title left unverified. We defend
-                it with a combination of meticulous record analysis and aggressive legal enforcement.
-                We don&apos;t just protect — we institutionalize your right.
-              </p>
-            </div>
-          </div>
-        </div>
-      </section>
+          <div>
+            <ol className="border-t border-black/10">
+              {LEDGER_AREAS.map((area, i) => {
+                const first = i * 3 + 1;
+                return (
+                  <li key={area.slug} className="border-b border-black/10">
+                    <details
+                      id={area.slug}
+                      name="practice-area"
+                      className="ledger-row group/row"
+                    >
+                      <summary
+                        className={`grid cursor-pointer list-none items-baseline py-6 outline-offset-4 focus-visible:outline-2 focus-visible:outline-[#e0472f] md:py-8 ${ROW_GRID}`}
+                      >
+                        <span className="t-meta col-start-1 row-start-1 text-[#161513]/70 transition-colors duration-300 group-open/row:text-accent-ink group-hover/row:text-accent-ink">
+                          {ledgerNo(i + 1)}
+                        </span>
+                        <h2 className="t-section col-start-2 row-start-1">{area.name}</h2>
+                        <span className="t-body-sm col-span-2 col-start-2 row-start-2 mt-2 block text-[#161513]/70 transition-colors duration-300 group-hover/row:text-[#161513] group-open/row:hidden xl:col-span-1 xl:col-start-3 xl:row-start-1 xl:mt-0 xl:group-open/row:block">
+                          {area.summary}
+                        </span>
+                        {/* Plus / minus. Boxed to one line of the heading so it
+                            centres on the name's first line at every size. */}
+                        <span
+                          aria-hidden="true"
+                          className="t-section relative col-start-3 row-start-1 h-[1.15em] self-start xl:col-start-4"
+                        >
+                          <span className="absolute right-0 top-1/2 h-px w-3.5 bg-[#161513] transition-colors duration-300 group-open/row:bg-[#e0472f] md:w-[18px]" />
+                          <span className="absolute right-0 top-1/2 h-px w-3.5 rotate-90 bg-[#161513] transition-[rotate,background-color] duration-500 group-open/row:rotate-0 group-open/row:bg-[#e0472f] md:w-[18px]" />
+                        </span>
+                      </summary>
 
-      {/* ── Service 04: Land Acquisition ────────────────────────── */}
-      <section className="relative min-h-screen flex flex-col justify-center mb-16 group">
-        <div className="absolute inset-0 z-0 opacity-30 grayscale group-hover:grayscale-0 transition-all duration-700 overflow-hidden">
-          <Image
-            src="https://images.unsplash.com/photo-1581092918056-0c4c3acd3789?w=1600&q=85"
-            alt="Land acquisition"
-            fill
-            sizes="100vw"
-            className="object-cover"
-          />
-          <div className="absolute inset-0 bg-gradient-to-b from-[#131313] via-[#131313]/20 to-[#131313]" />
-        </div>
-        <div className="relative z-10 px-8 md:px-12 text-right">
-          <div className="flex flex-col items-end">
-            <span className="font-label uppercase tracking-[0.4em] text-[10px] text-[#ffb4a9] mb-4 block">
-              Practice Area 04
-            </span>
-            <h2
-              className="font-headline italic leading-none tracking-tighter text-[#e2e2e2] mb-12"
-              style={{ fontSize: "clamp(2.5rem, 7vw, 6rem)" }}
-            >
-              LAND<br />ACQUISITION
-            </h2>
-          </div>
-          <div className="flex flex-col md:flex-row-reverse gap-20 items-start">
-            <div className="w-full md:w-1/3 flex flex-col gap-6 text-right">
-              <div className="h-px w-full bg-[#5b403c]/30" />
-              <ul className="space-y-4">
-                {[
-                  ["Compensation Claims & Disputes", "10."],
-                  ["Government Acquisition Defense", "11."],
-                  ["Rehabilitation & Resettlement", "12."],
-                ].map(([item, num], i) => (
-                  <li key={i} className="flex items-center justify-end gap-4 group/item">
-                    <span className="font-label uppercase tracking-widest text-xs text-[#c6c6c7] group-hover/item:text-[#e2e2e2] transition-colors">
-                      {item}
-                    </span>
-                    <span className="text-[#ffb4a9] font-headline italic text-xl">{num}</span>
-                  </li>
-                ))}
-              </ul>
-            </div>
-            <div className="max-w-md pt-6 text-right ml-auto">
-              <p className="text-[#c6c6c7]/70 leading-relaxed text-sm tracking-wide">
-                When the state exercises its power of compulsory acquisition, your right to fair
-                compensation and due process must be defended with equal authority. We challenge
-                inadequate awards and ensure every entitlement under the law is secured.
-              </p>
-            </div>
-          </div>
-        </div>
-      </section>
+                      <div
+                        className={`pb-12 md:pb-14 md:pl-[5.5rem] xl:grid xl:pl-0 ${ROW_GRID}`}
+                      >
+                        <figure className="mb-8 md:max-w-xl xl:col-start-2 xl:mb-0 xl:max-w-none">
+                          {/* A cream mat around a full-strength print. */}
+                          <div className="border border-black/10 bg-[#f6f4f0] p-2">
+                            <div className="relative aspect-[16/10] overflow-hidden bg-[#eeebe5] md:aspect-[3/2]">
+                              <Image
+                                src={area.image.src}
+                                alt={area.image.alt}
+                                fill
+                                sizes="(min-width: 1280px) 28vw, (min-width: 768px) 576px, calc(100vw - 3rem)"
+                                className="object-cover grayscale contrast-[1.08]"
+                              />
+                            </div>
+                          </div>
+                          <figcaption className="mt-3 flex justify-between gap-4">
+                            <span className="t-meta text-[#161513]/70">
+                              Practice area {ledgerNo(i + 1)}
+                            </span>
+                            <span className="t-meta text-[#161513]/70">
+                              Matters {ledgerNo(first)}–{ledgerNo(first + 2)}
+                            </span>
+                          </figcaption>
+                        </figure>
 
-      {/* ── Service 05: Agricultural Land Issues ─────────────────── */}
-      <section className="relative min-h-screen flex flex-col justify-center mb-16 group">
-        <div className="absolute inset-0 z-0 opacity-30 grayscale group-hover:grayscale-0 transition-all duration-700 overflow-hidden">
-          <Image
-            src="https://images.unsplash.com/photo-1464226184884-fa280b87c399?w=1600&q=85"
-            alt="Agricultural land"
-            fill
-            sizes="100vw"
-            className="object-cover"
-          />
-          <div className="absolute inset-0 bg-gradient-to-t from-[#131313] via-[#131313]/30 to-transparent" />
-        </div>
-        <div className="relative z-10 px-8 md:px-12">
-          <span className="font-label uppercase tracking-[0.4em] text-[10px] text-[#ffb4a9] mb-4 block">
-            Practice Area 05
-          </span>
-          <h2
-            className="font-headline italic leading-none tracking-tighter text-[#e2e2e2] mb-12"
-            style={{ fontSize: "clamp(2.5rem, 7vw, 6rem)" }}
-          >
-            AGRICULTURAL<br />LAND ISSUES
-          </h2>
-          <div className="flex flex-col md:flex-row gap-20 items-start">
-            <div className="w-full md:w-1/3 flex flex-col gap-6">
-              <div className="h-px w-full bg-[#5b403c]/30" />
-              <ul className="space-y-4">
-                {[
-                  "Sale & Transfer of Agricultural Land",
-                  "Inheritance & Succession Disputes",
-                  "Farmer Rights & Rural Property",
-                ].map((item, i) => (
-                  <li key={i} className="flex items-center gap-4 group/item">
-                    <span className="text-[#ffb4a9] font-headline italic text-xl">
-                      {String(i + 13).padStart(2, "0")}.
-                    </span>
-                    <span className="font-label uppercase tracking-widest text-xs text-[#c6c6c7] group-hover/item:text-[#e2e2e2] transition-colors">
-                      {item}
-                    </span>
+                        <div className="flex flex-col xl:col-span-2 xl:col-start-3">
+                          <p className="t-lede measure mb-8">{area.description}</p>
+                          <ul className="mb-9 border-t border-black/10">
+                            {area.matters.map((matter, j) => (
+                              <li
+                                key={matter}
+                                className="grid grid-cols-[2.5rem_minmax(0,1fr)] items-baseline border-b border-black/10 py-3.5 md:grid-cols-[3.25rem_minmax(0,1fr)] md:py-4"
+                              >
+                                <span className="t-meta text-accent-ink">
+                                  {ledgerNo(first + j)}
+                                </span>
+                                <span className="t-card">{matter}</span>
+                              </li>
+                            ))}
+                          </ul>
+                          <div className="mt-auto">
+                            <PracticeAreaGuideLink area={area.slug} />
+                          </div>
+                        </div>
+                      </div>
+                    </details>
                   </li>
-                ))}
-              </ul>
-            </div>
-            <div className="max-w-md pt-6">
-              <p className="text-[#c6c6c7]/70 leading-relaxed text-sm tracking-wide">
-                Gujarat&apos;s agricultural land laws carry layers of restriction that require
-                specialist navigation. From inheritance succession to sale and transfer compliance,
-                we ensure rural landowners are protected at every stage of their transaction.
-              </p>
-            </div>
-          </div>
-        </div>
-      </section>
+                );
+              })}
+            </ol>
 
-      {/* ── Service 06: Conversion of Land Use ───────────────────── */}
-      <section className="relative min-h-screen flex flex-col justify-center mb-16 group">
-        <div className="absolute inset-0 z-0 opacity-30 grayscale group-hover:grayscale-0 transition-all duration-700 overflow-hidden">
-          <Image
-            src="https://images.unsplash.com/photo-1486325212027-8081e485255e?w=1600&q=85"
-            alt="Urban land conversion"
-            fill
-            sizes="100vw"
-            className="object-cover"
-          />
-          <div className="absolute inset-0 bg-gradient-to-b from-[#131313] via-[#131313]/20 to-[#131313]" />
-        </div>
-        <div className="relative z-10 px-8 md:px-12 text-right">
-          <div className="flex flex-col items-end">
-            <span className="font-label uppercase tracking-[0.4em] text-[10px] text-[#ffb4a9] mb-4 block">
-              Practice Area 06
-            </span>
-            <h2
-              className="font-headline italic leading-none tracking-tighter text-[#e2e2e2] mb-12"
-              style={{ fontSize: "clamp(2.5rem, 7vw, 6rem)" }}
-            >
-              CONVERSION OF<br />LAND USE
-            </h2>
-          </div>
-          <div className="flex flex-col md:flex-row-reverse gap-20 items-start">
-            <div className="w-full md:w-1/3 flex flex-col gap-6 text-right">
-              <div className="h-px w-full bg-[#5b403c]/30" />
-              <ul className="space-y-4">
-                {[
-                  ["Agricultural to Non-Agricultural", "16."],
-                  ["Compliance with Gujarat NA Rules", "17."],
-                  ["Permission & Approval Proceedings", "18."],
-                ].map(([item, num], i) => (
-                  <li key={i} className="flex items-center justify-end gap-4 group/item">
-                    <span className="font-label uppercase tracking-widest text-xs text-[#c6c6c7] group-hover/item:text-[#e2e2e2] transition-colors">
-                      {item}
-                    </span>
-                    <span className="text-[#ffb4a9] font-headline italic text-xl">{num}</span>
-                  </li>
-                ))}
-              </ul>
-            </div>
-            <div className="max-w-md pt-6 text-right ml-auto">
-              <p className="text-[#c6c6c7]/70 leading-relaxed text-sm tracking-wide">
-                Converting agricultural land to non-agricultural use in Gujarat demands meticulous
-                procedural compliance. We manage the entire conversion process — from initial
-                application to final permission — ensuring zero defect in documentation.
-              </p>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* ── Service 07: Tenancy and Tenure Laws ──────────────────── */}
-      <section className="relative min-h-screen flex flex-col justify-center mb-16 group">
-        <div className="absolute inset-0 z-0 opacity-30 grayscale group-hover:grayscale-0 transition-all duration-700 overflow-hidden">
-          <Image
-            src="https://images.unsplash.com/photo-1560518883-ce09059eeffa?w=1600&q=85"
-            alt="Tenancy law"
-            fill
-            sizes="100vw"
-            className="object-cover"
-          />
-          <div className="absolute inset-0 bg-gradient-to-r from-[#131313] via-transparent to-[#131313]" />
-        </div>
-        <div className="relative z-10 px-8 md:px-12">
-          <span className="font-label uppercase tracking-[0.4em] text-[10px] text-[#ffb4a9] mb-4 block">
-            Practice Area 07
-          </span>
-          <h2
-            className="font-headline italic leading-none tracking-tighter text-[#e2e2e2] mb-12"
-            style={{ fontSize: "clamp(2.5rem, 7vw, 6rem)" }}
-          >
-            TENANCY &amp;<br />TENURE LAWS
-          </h2>
-          <div className="flex flex-col md:flex-row gap-20 items-start">
-            <div className="w-full md:w-1/3 flex flex-col gap-6">
-              <div className="h-px w-full bg-[#5b403c]/30" />
-              <ul className="space-y-4">
-                {[
-                  "Tenancy Rights & Disputes",
-                  "Landlord–Tenant Proceedings",
-                  "Inheritance of Tenancy Rights",
-                ].map((item, i) => (
-                  <li key={i} className="flex items-center gap-4 group/item">
-                    <span className="text-[#ffb4a9] font-headline italic text-xl">
-                      {String(i + 19).padStart(2, "0")}.
-                    </span>
-                    <span className="font-label uppercase tracking-widest text-xs text-[#c6c6c7] group-hover/item:text-[#e2e2e2] transition-colors">
-                      {item}
-                    </span>
-                  </li>
-                ))}
-              </ul>
-            </div>
-            <div className="max-w-md pt-6">
-              <p className="text-[#c6c6c7]/70 leading-relaxed text-sm tracking-wide">
-                Tenancy law in Gujarat is a discipline requiring absolute command of both statute and
-                custom. We represent landlords and tenants alike in disputes over rights, evictions,
-                and the inheritance of tenancy — with the precision the law demands.
-              </p>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* ── Service 08: Appeals and Representation ───────────────── */}
-      <section className="relative min-h-screen flex flex-col justify-center mb-16 group">
-        <div className="absolute inset-0 z-0 opacity-30 grayscale group-hover:grayscale-0 transition-all duration-700 overflow-hidden">
-          <Image
-            src="https://images.unsplash.com/photo-1589829545856-d10d557cf95f?w=1600&q=85"
-            alt="Court appeals"
-            fill
-            sizes="100vw"
-            className="object-cover"
-          />
-          <div className="absolute inset-0 bg-gradient-to-b from-[#131313] via-[#131313]/20 to-[#131313]" />
-        </div>
-        <div className="relative z-10 px-8 md:px-12 text-right">
-          <div className="flex flex-col items-end">
-            <span className="font-label uppercase tracking-[0.4em] text-[10px] text-[#ffb4a9] mb-4 block">
-              Practice Area 08
-            </span>
-            <h2
-              className="font-headline italic leading-none tracking-tighter text-[#e2e2e2] mb-12"
-              style={{ fontSize: "clamp(2.5rem, 7vw, 6rem)" }}
-            >
-              APPEALS &amp;<br />REPRESENTATION
-            </h2>
-          </div>
-          <div className="flex flex-col md:flex-row-reverse gap-20 items-start">
-            <div className="w-full md:w-1/3 flex flex-col gap-6 text-right">
-              <div className="h-px w-full bg-[#5b403c]/30" />
-              <ul className="space-y-4">
-                {[
-                  ["Collector & Deputy Collector Appeals", "22."],
-                  ["Gujarat Revenue Tribunal", "23."],
-                  ["Revision & Review Petitions", "24."],
-                ].map(([item, num], i) => (
-                  <li key={i} className="flex items-center justify-end gap-4 group/item">
-                    <span className="font-label uppercase tracking-widest text-xs text-[#c6c6c7] group-hover/item:text-[#e2e2e2] transition-colors">
-                      {item}
-                    </span>
-                    <span className="text-[#ffb4a9] font-headline italic text-xl">{num}</span>
-                  </li>
-                ))}
-              </ul>
-            </div>
-            <div className="max-w-md pt-6 text-right ml-auto">
-              <p className="text-[#c6c6c7]/70 leading-relaxed text-sm tracking-wide">
-                Revenue appeals demand not just legal knowledge but an authoritative command of
-                procedural hierarchy. We represent clients before the Collector, Deputy Collector,
-                and the Gujarat Revenue Tribunal with the full weight of evidence and argument.
-              </p>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* ── Service 09: Legal Consultation on Land Policies ──────── */}
-      <section className="relative min-h-screen flex flex-col justify-center mb-16 group">
-        <div className="absolute inset-0 z-0 opacity-30 grayscale group-hover:grayscale-0 transition-all duration-700 overflow-hidden">
-          <Image
-            src="https://images.unsplash.com/photo-1450101499163-c8848c66ca85?w=1600&q=85"
-            alt="Legal consultation"
-            fill
-            sizes="100vw"
-            className="object-cover"
-          />
-          <div className="absolute inset-0 bg-gradient-to-t from-[#131313] via-[#131313]/30 to-transparent" />
-        </div>
-        <div className="relative z-10 px-8 md:px-12">
-          <span className="font-label uppercase tracking-[0.4em] text-[10px] text-[#ffb4a9] mb-4 block">
-            Practice Area 09
-          </span>
-          <h2
-            className="font-headline italic leading-none tracking-tighter text-[#e2e2e2] mb-12"
-            style={{ fontSize: "clamp(2.5rem, 7vw, 6rem)" }}
-          >
-            LAND POLICY<br />CONSULTATION
-          </h2>
-          <div className="flex flex-col md:flex-row gap-20 items-start">
-            <div className="w-full md:w-1/3 flex flex-col gap-6">
-              <div className="h-px w-full bg-[#5b403c]/30" />
-              <ul className="space-y-4">
-                {[
-                  "State Land Policy Advisory",
-                  "Revenue Law Amendments & Impact",
-                  "Property Ownership Structuring",
-                ].map((item, i) => (
-                  <li key={i} className="flex items-center gap-4 group/item">
-                    <span className="text-[#ffb4a9] font-headline italic text-xl">
-                      {String(i + 25).padStart(2, "0")}.
-                    </span>
-                    <span className="font-label uppercase tracking-widest text-xs text-[#c6c6c7] group-hover/item:text-[#e2e2e2] transition-colors">
-                      {item}
-                    </span>
-                  </li>
-                ))}
-              </ul>
-            </div>
-            <div className="max-w-md pt-6">
-              <p className="text-[#c6c6c7]/70 leading-relaxed text-sm tracking-wide">
-                The landscape of Gujarat land policy evolves constantly. We provide strategic
-                advisory on state amendments, policy implications for existing holdings, and
-                structuring property ownership to remain fully compliant and defensively sound.
-              </p>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* ── Service 10: Court Representation ─────────────────────── */}
-      <section className="relative min-h-screen flex flex-col justify-center mb-32 group">
-        <div className="absolute inset-0 z-0 opacity-30 grayscale group-hover:grayscale-0 transition-all duration-700 overflow-hidden">
-          <Image
-            src="https://images.unsplash.com/photo-1575505586569-646b2ca898fc?w=1600&q=85"
-            alt="Court representation"
-            fill
-            sizes="100vw"
-            className="object-cover"
-          />
-          <div className="absolute inset-0 bg-gradient-to-b from-[#131313] via-[#131313]/20 to-[#131313]" />
-        </div>
-        <div className="relative z-10 px-8 md:px-12 text-right">
-          <div className="flex flex-col items-end">
-            <span className="font-label uppercase tracking-[0.4em] text-[10px] text-[#ffb4a9] mb-4 block">
-              Practice Area 10
-            </span>
-            <h2
-              className="font-headline italic leading-none tracking-tighter text-[#e2e2e2] mb-12"
-              style={{ fontSize: "clamp(2.5rem, 7vw, 6rem)" }}
-            >
-              COURT<br />REPRESENTATION
-            </h2>
-          </div>
-          <div className="flex flex-col md:flex-row-reverse gap-20 items-start">
-            <div className="w-full md:w-1/3 flex flex-col gap-6 text-right">
-              <div className="h-px w-full bg-[#5b403c]/30" />
-              <ul className="space-y-4">
-                {[
-                  ["Civil Courts & Revenue Forums", "28."],
-                  ["Gujarat High Court", "29."],
-                  ["Supreme Court of India", "30."],
-                ].map(([item, num], i) => (
-                  <li key={i} className="flex items-center justify-end gap-4 group/item">
-                    <span className="font-label uppercase tracking-widest text-xs text-[#c6c6c7] group-hover/item:text-[#e2e2e2] transition-colors">
-                      {item}
-                    </span>
-                    <span className="text-[#ffb4a9] font-headline italic text-xl">{num}</span>
-                  </li>
-                ))}
-              </ul>
-            </div>
-            <div className="max-w-md pt-6 text-right ml-auto">
-              <p className="text-[#c6c6c7]/70 leading-relaxed text-sm tracking-wide">
-                From civil courts to the Supreme Court of India, Adv. Savjani carries your matter
-                to every level of the judicial hierarchy. Appellate strategy, writ petitions, and
-                special leave petitions executed with the full force of specialist land law expertise.
-              </p>
+            {/* The prompt shows under the side index only on xl screens at
+                least 800px tall; everywhere else (no index below lg, a
+                crowded one at lg or on short windows) it comes here, so
+                exactly one copy is visible at any size. */}
+            <div className="mt-12 xl:[@media(min-height:800px)]:hidden">
+              <LedgerPrompt />
             </div>
           </div>
         </div>
       </section>
 
       {/* ── CTA ─────────────────────────────────────────────────── */}
-      <section className="px-8 md:px-12 py-32 md:py-48 bg-[#1b1b1b]">
-        <StaggerContainer className="flex flex-col items-center text-center">
-          <StaggerItem>
-            <p className="font-label uppercase tracking-[0.5em] text-[10px] text-[#c6c6c7] mb-12">
-              The Next Move
-            </p>
-          </StaggerItem>
-          <StaggerItem>
-            <h3 className="text-6xl md:text-8xl font-headline italic mb-16 tracking-tighter">
-              Secure the Verdict.
-            </h3>
-          </StaggerItem>
-          <StaggerItem>
-            <Link
-              href="/contact"
-              className="px-16 py-6 bg-[#fe5545] text-white font-label uppercase tracking-[0.2em] text-xs hover:bg-[#e2e2e2] hover:text-[#131313] transition-colors duration-300"
-            >
-              Inquire for Counsel
-            </Link>
-          </StaggerItem>
-        </StaggerContainer>
+      <section data-rail className="bg-[#eeebe5] px-6 py-24 md:px-12 md:py-32">
+        <FadeUp>
+          <div className="grid grid-cols-1 items-end gap-10 md:grid-cols-[1.2fr_1fr] md:gap-12">
+            <div>
+              <p className="t-eyebrow mb-4">The Next Move</p>
+              <h2 className="t-display-sm">Secure the Verdict.</h2>
+            </div>
+            <div className="flex flex-col gap-5">
+              <p className="t-body-sm measure-narrow">
+                Consultations at the Makarba office, Titanium Business Park —{" "}
+                {PRACTICE.openingHours.display}.
+              </p>
+              <Link
+                href="/contact"
+                className="t-action block bg-[#fe5545] px-8 py-6 text-center text-white transition-colors duration-200 hover:bg-[#161513] hover:text-[#f6f4f0]"
+              >
+                Inquire for Counsel
+              </Link>
+              <a
+                href={`tel:${PRACTICE.telephone}`}
+                className="t-action inline-flex min-h-11 items-center justify-center text-[#161513]/70 transition-colors duration-200 hover:text-[#161513]"
+              >
+                Or call {PRACTICE.telephoneDisplay}
+              </a>
+            </div>
+          </div>
+        </FadeUp>
+      </section>
+
+      {/* ── Deep-dive pages ─────────────────────────────────────── */}
+      <section
+        data-rail
+        aria-labelledby="guides-by-matter"
+        className="border-t border-[#cdc6b9]/40 px-6 py-20 md:px-12 md:py-24"
+      >
+        <FadeUp>
+          <p className="t-eyebrow mb-4">Go deeper</p>
+          <h2 id="guides-by-matter" className="t-section mb-10 md:mb-12">
+            Detailed guides by matter
+          </h2>
+        </FadeUp>
+        {/* A ruled index, two columns from md: each guide's name with its
+            page's heading under it. */}
+        <ul className="grid grid-cols-1 border-t border-[#cdc6b9]/60 md:grid-cols-2 md:gap-x-12">
+          {SERVICE_PAGES.map((svc) => (
+            <li key={svc.slug} className="border-b border-[#cdc6b9]/60">
+              <Link
+                href={`/${svc.slug}`}
+                className="group flex items-baseline justify-between gap-6 py-5"
+              >
+                <span>
+                  <span className="t-card block transition-colors duration-200 group-hover:text-[#fe5545]">
+                    {svc.displayLines.join(" ")}
+                  </span>
+                  <span className="t-body-sm mt-1 block text-[#161513]/65">
+                    {svc.h1}
+                  </span>
+                </span>
+                <span
+                  aria-hidden="true"
+                  className="text-[#fe5545] transition-transform duration-300 group-hover:translate-x-1.5"
+                >
+                  →
+                </span>
+              </Link>
+            </li>
+          ))}
+        </ul>
       </section>
 
       <Footer />

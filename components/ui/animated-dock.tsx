@@ -35,7 +35,7 @@ export const AnimatedDock = ({ className, items }: AnimatedDockProps) => {
       onMouseMove={(e) => mouseX.set(e.pageX)}
       onMouseLeave={() => mouseX.set(Infinity)}
       className={cn(
-        "flex h-14 items-end gap-3 px-4 pb-2",
+        "flex min-h-14 flex-wrap items-end gap-2 pb-2 sm:gap-3 sm:px-4",
         className,
       )}
     >
@@ -80,7 +80,7 @@ const DockItem = ({ mouseX, children, label }: DockItemProps) => {
         <motion.div
           initial={{ opacity: 0, y: 4 }}
           animate={{ opacity: 1, y: 0 }}
-          className="absolute -top-8 font-label uppercase tracking-[0.2em] text-[8px] text-[#e2e2e2]/50 whitespace-nowrap pointer-events-none"
+          className="t-meta absolute -top-8 text-[10px] whitespace-nowrap pointer-events-none"
         >
           {label}
         </motion.div>
@@ -91,7 +91,7 @@ const DockItem = ({ mouseX, children, label }: DockItemProps) => {
         style={{ width }}
         onMouseEnter={() => setHovered(true)}
         onMouseLeave={() => setHovered(false)}
-        className="aspect-square bg-[#1f1f1f] border border-[#5b403c]/20 hover:border-[#fe5545] transition-colors duration-200 flex items-center justify-center text-[#e2e2e2]/50 hover:text-[#fe5545]"
+        className="aspect-square bg-[#e8e4dc] border border-[#cdc6b9]/20 hover:border-[#fe5545] transition-colors duration-200 flex items-center justify-center text-[#161513]/50 hover:text-[#fe5545]"
       >
         <motion.div
           style={{ scale: iconSpring }}

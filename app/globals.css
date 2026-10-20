@@ -4,6 +4,17 @@
 
 html {
   position: relative;
+  /* Several entrance animations (SlideIn, the parallax wrappers) start their
+     element translated off to one side. Until it scrolls into view and
+     settles, that element sticks out past the right edge and widens the
+     document — on a 1480px viewport the page measured 1544px, which gave the
+     whole site a horizontal scrollbar and left every full-bleed section
+     ending short of the right edge, as if shifted left.
+
+     `clip` rather than `hidden`: it suppresses the overflow WITHOUT turning
+     the root into a scroll container, so `position: sticky` and scroll
+     anchoring keep working. */
+  overflow-x: clip;
 }
 
 @custom-variant dark (&:is(.dark *));
@@ -12,7 +23,9 @@ html {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --font-sans: var(--font-sans);
-  --font-mono: var(--font-geist-mono);
+  /* No monospace in the system: a stray `font-mono` resolves to the site
+     family rather than to an undefined variable. */
+  --font-mono: var(--font-app);
   --color-sidebar-ring: var(--sidebar-ring);
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
@@ -52,26 +65,27 @@ html {
 }
 
 /* Dark theme is the default for the entire site */
+/* Light is the default for the entire site. */
 :root {
-  --background: oklch(0.08 0 0);
-  --foreground: oklch(0.97 0 0);
-  --card: oklch(0.12 0 0);
-  --card-foreground: oklch(0.97 0 0);
-  --popover: oklch(0.10 0 0);
-  --popover-foreground: oklch(0.97 0 0);
-  --primary: oklch(0.795 0.184 86.047); /* #EAB308 gold */
-  --primary-foreground: oklch(0.08 0 0);
-  --secondary: oklch(0.18 0 0);
-  --secondary-foreground: oklch(0.97 0 0);
-  --muted: oklch(0.18 0 0);
-  --muted-foreground: oklch(0.60 0 0);
-  --accent: oklch(0.795 0.184 86.047);
-  --accent-foreground: oklch(0.08 0 0);
-  --destructive: oklch(0.704 0.191 22.216);
-  --border: oklch(1 0 0 / 8%);
-  --input: oklch(1 0 0 / 10%);
-  --ring: oklch(0.795 0.184 86.047 / 40%);
-  --chart-1: oklch(0.795 0.184 86.047);
+  --background: oklch(0.97 0.004 85);
+  --foreground: oklch(0.17 0.004 85);
+  --card: oklch(0.99 0.003 85);
+  --card-foreground: oklch(0.17 0.004 85);
+  --popover: oklch(0.99 0.003 85);
+  --popover-foreground: oklch(0.17 0.004 85);
+  --primary: oklch(0.645 0.206 29);
+  --primary-foreground: oklch(0.99 0 0);
+  --secondary: oklch(0.93 0.005 85);
+  --secondary-foreground: oklch(0.17 0.004 85);
+  --muted: oklch(0.93 0.005 85);
+  --muted-foreground: oklch(0.45 0.005 85);
+  --accent: oklch(0.645 0.206 29);
+  --accent-foreground: oklch(0.99 0 0);
+  --destructive: oklch(0.577 0.245 27.325);
+  --border: oklch(0.17 0.004 85 / 12%);
+  --input: oklch(0.17 0.004 85 / 16%);
+  --ring: oklch(0.645 0.206 29 / 35%);
+  --chart-1: oklch(0.645 0.206 29);
   --chart-2: oklch(0.623 0.214 259.815);
   --chart-3: oklch(0.546 0.245 262.881);
   --chart-4: oklch(0.488 0.243 264.376);
@@ -133,57 +147,191 @@ html {
   }
 }
 
+/* ─── Licensed families (Pangram Pangram) ───────────────────────────────
+   PP Editorial Old sets the name and the chapter marks; PP Neue Montreal
+   sets everything else.
+
+   Declared as plain @font-face against /public/fonts rather than through
+   next/font/local, deliberately: next/font resolves its `src` at build
+   time and fails the build outright if a file is missing, which would mean
+   this repo could not compile until the licensed files were in it. A
+   missing @font-face simply falls through to the next family in the stack,
+   so the site builds and runs either way — Inter and Playfair stand in
+   until the real files land in public/fonts/.
+
+   See public/fonts/README.md for the exact filenames.
+   ──────────────────────────────────────────────────────────────────── */
+@font-face {
+  font-family: "PP Editorial Old";
+  src: url("/fonts/PPEditorialOld-Regular.woff2") format("woff2");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "PP Editorial Old";
+  src: url("/fonts/PPEditorialOld-Italic.woff2") format("woff2");
+  font-weight: 400;
+  font-style: italic;
+  font-display: swap;
+}
+@font-face {
+  font-family: "PP Editorial Old";
+  src: url("/fonts/PPEditorialOld-Ultralight.woff2") format("woff2");
+  font-weight: 200;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "PP Neue Montreal";
+  src: url("/fonts/PPNeueMontreal-Book.woff2") format("woff2");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "PP Neue Montreal";
+  src: url("/fonts/PPNeueMontreal-Medium.woff2") format("woff2");
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+}
+/* The one italic cut on hand (a 400). Declared across 300–400 so italics in
+   body copy (set at 300) use it too — without any italic face the browser
+   slants the upright letters itself, which is what <em> in journal articles
+   was getting. Heavier italics still fall back to a synthesised slant. */
+@font-face {
+  font-family: "PP Neue Montreal";
+  src: url("/fonts/PPNeueMontreal-Italic.woff2") format("woff2");
+  font-weight: 300 400;
+  font-style: italic;
+  font-display: swap;
+}
+/* 600 is served by the Bold cut for now — the files on hand have no
+   SemiBold. Drop in PPNeueMontreal-SemiBold.woff2 and point this back at
+   it; until then weight-600 text sets a touch heavier than designed. */
+@font-face {
+  font-family: "PP Neue Montreal";
+  src: url("/fonts/PPNeueMontreal-Bold.woff2") format("woff2");
+  font-weight: 600;
+  font-style: normal;
+  font-display: swap;
+}
+/* 300 is served by the Book cut for now. The type scale sets body copy,
+   quotes and captions at 300 (a Light), and the files on hand have no
+   Light — Thin (a true 100) stood in at first and turned all of that copy
+   hairline-thin, faint on a phone in particular. Book is the nearer of the
+   two. Drop in PPNeueMontreal-Light.woff2 and point this at it. */
+@font-face {
+  font-family: "PP Neue Montreal";
+  src: url("/fonts/PPNeueMontreal-Book.woff2") format("woff2");
+  font-weight: 300;
+  font-style: normal;
+  font-display: swap;
+}
+
 /* ─── Noir Advocate Design Tokens ───────────────────────────────────────── */
 @theme {
   /* Surface scale */
-  --color-surface: #131313;
-  --color-surface-dim: #131313;
-  --color-surface-container-lowest: #0e0e0e;
-  --color-surface-container-low: #1b1b1b;
-  --color-surface-container: #1f1f1f;
-  --color-surface-container-high: #2a2a2a;
-  --color-surface-container-highest: #353535;
-  --color-surface-bright: #393939;
-  --color-surface-variant: #353535;
+  --color-surface: #f6f4f0;
+  --color-surface-dim: #f6f4f0;
+  --color-surface-container-lowest: #ffffff;
+  --color-surface-container-low: #eeebe5;
+  --color-surface-container: #e8e4dc;
+  --color-surface-container-high: #ddd8ce;
+  --color-surface-container-highest: #d2ccc0;
+  --color-surface-bright: #ffffff;
+  --color-surface-variant: #d2ccc0;
 
   /* On-surface */
-  --color-on-surface: #e2e2e2;
-  --color-on-surface-variant: #e3beb9;
-  --color-on-background-dark: #e2e2e2;
+  --color-on-surface: #161513;
+  --color-on-surface-variant: #5c4a46;
+  --color-on-background-dark: #161513;
 
   /* Primary (Burnt Vermilion) */
-  --color-primary-noir: #ffb4a9;
+  --color-primary-noir: #c43b27;
   --color-primary-container: #fe5545;
   --color-on-primary-container: #ffffff;
+  /* Accent for small TEXT on parchment (#ece2cf): 5.2:1 there (6.1:1 on
+     cream), where #c43b27 is only 4.1:1. Non-text marks on parchment
+     (dashes, the +/−) keep the brighter #e0472f. Used by /services. */
+  --color-accent-ink: #a8321f;
 
   /* Secondary */
-  --color-secondary-noir: #c6c6c7;
+  --color-secondary-noir: #4a4745;
 
   /* Outlines */
-  --color-outline-variant: #5b403c;
-  --color-outline-noir: #aa8984;
+  --color-outline-variant: #cdc6b9;
+  --color-outline-noir: #a8a093;
 
   /* Inverse */
-  --color-inverse-surface: #e2e2e2;
-  --color-inverse-on-surface: #303030;
+  --color-inverse-surface: #161513;
+  --color-inverse-on-surface: #f6f4f0;
 
-  /* Fonts */
-  --font-headline: var(--font-newsreader), "Newsreader", Georgia, serif;
-  --font-hero: var(--font-cormorant), "Cormorant Garamond", Georgia, serif;
-  --font-body: var(--font-inter), "Inter", system-ui, sans-serif;
-  --font-label: var(--font-inter), "Inter", system-ui, sans-serif;
+  /* The site's sans. `--font-app` leads with PP Neue Montreal (the licensed
+     files in /public/fonts, declared above); `--font-site` is Inter via
+     next/font (lib/fonts.ts), kept only as the fallback while those load or
+     if one is missing. The four aliases keep the `font-headline` /
+     `font-hero` / `font-body` / `font-label` utilities in the markup
+     resolving — they all point at the same family. Hierarchy comes from
+     the t-* scale (size, weight, tracking), not from switching typeface;
+     the one other family, PP Editorial Old, is reserved for the name and
+     the serif plates (.t-serif-*). Note `--font-app` and `--font-site` must
+     be different names, or the declaration references itself. */
+  --font-app: "PP Neue Montreal", var(--font-site), "Inter", system-ui, sans-serif;
+  --font-headline: var(--font-app);
+  --font-hero: var(--font-app);
+  --font-body: var(--font-app);
+  --font-label: var(--font-app);
 }
 
 /* Noir base overrides */
 body {
-  background-color: #131313;
-  color: #e2e2e2;
-  overflow-x: hidden;
+  background-color: #f6f4f0;
+  color: #161513;
+  /*
+   * `clip`, not `hidden`. `overflow-x: hidden` on <body> promotes it to a
+   * scroll container, which (a) breaks `position: sticky` descendants — the
+   * article sidebar relies on one — and (b) moves scrolling off the root,
+   * costing the browser's optimised root-scroller path. `clip` suppresses the
+   * overflow without any of that.
+   */
+  overflow-x: clip;
+  /* Stop the page shifting sideways when a scrollbar appears/disappears. */
+  scrollbar-gutter: stable;
 }
 
-/* Smooth scroll */
+/* The fixed rail owns the left edge from md up; the page starts after it.
+   Padding rather than margin so `min-h-screen` sections stay a full
+   viewport tall. */
+@media (min-width: 768px) {
+  body {
+    padding-left: 4rem;
+  }
+}
+
 html {
   scroll-behavior: smooth;
+  /* Headings that stick under the fixed navbar when jumped to via anchor. */
+  scroll-padding-top: 6rem;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+/* Honour the OS setting. Also the cheapest possible "make scrolling smooth"
+   fix for anyone who has already asked their system for less motion. */
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
 }
 
 .text-outline {
@@ -206,15 +354,11 @@ a[role="button"]:active {
   transform: scale(0.97);
 }
 
-/* ── Smooth image hover scale ──────────────────────────────────────────── */
+/* Image hover-zoom removed by request. `.img-hover-scale` is kept as a plain
+   clipping container so existing markup keeps its rounded/overflow behaviour
+   without animating a transform on hover. */
 .img-hover-scale {
   overflow: hidden;
-}
-.img-hover-scale img {
-  transition: transform 0.7s cubic-bezier(0.16, 1, 0.3, 1);
-}
-.img-hover-scale:hover img {
-  transform: scale(1.06);
 }
 
 /* ── Selection color (noir palette) ────────────────────────────────────── */
@@ -224,77 +368,356 @@ a[role="button"]:active {
 }
 
 /* ── Article body prose styles ─────────────────────────────────────────── */
+/* Article body. Shares the metrics of `.t-body` so a blog post reads as the
+   same voice as the rest of the site, with a measure so lines do not run the
+   full width of a desktop column. */
 .prose-noir {
-  color: #c6c6c7;
-  font-size: 1.125rem;
-  line-height: 1.85;
+  color: var(--color-secondary-noir);
+  font-family: var(--font-body);
+  font-size: 1.0625rem;
+  line-height: 1.75;
   font-weight: 300;
+  text-wrap: pretty;
+  max-width: 68ch;
 }
 .prose-noir p {
-  margin-bottom: 2rem;
+  margin-bottom: 1.75rem;
 }
 .prose-noir h2 {
-  font-family: var(--font-headline);
-  font-style: italic;
-  font-size: clamp(1.6rem, 3vw, 2.4rem);
-  color: #e2e2e2;
+  font-family: var(--font-app);
+  font-weight: 500;
+  font-style: normal;
+  font-size: clamp(1.75rem, 3.2vw, 2.85rem);
+  color: var(--color-on-surface);
   margin-top: 3.5rem;
   margin-bottom: 1.25rem;
-  line-height: 1.1;
+  line-height: 1.08;
   letter-spacing: -0.02em;
+  text-wrap: balance;
 }
+.prose-noir h3 {
+  font-family: var(--font-app);
+  font-weight: 500;
+  font-size: clamp(1.2rem, 1.8vw, 1.6rem);
+  color: var(--color-on-surface);
+  margin-top: 2.5rem;
+  margin-bottom: 0.9rem;
+  line-height: 1.25;
+  text-wrap: balance;
+}
+/* Italic survives only where it means something: emphasis in running text. */
 .prose-noir em {
-  color: #e3beb9;
+  color: var(--color-on-surface-variant);
   font-style: italic;
 }
 .prose-noir strong {
-  color: #e2e2e2;
+  color: #161513;
   font-weight: 500;
 }
 
-/* ── Hero background drift — a single cheap transform, not per-element motion ── */
-@keyframes hero-drift {
-  0%,
-  100% {
-    transform: scale(1);
+/* ── Lady Justice: bronze at rest, line drawing on hover ──────────────
+   The photo fades and softens out while the traced outline draws itself
+   over the same pixels. Each path has `pathLength="1"`, so a dash of 1
+   offset by 1 is fully hidden and offset 0 is fully drawn, whatever its
+   real length. The drapery follows the outline a beat later, so the
+   silhouette lands first and the folds fill in after it.
+
+   Leaving reverses it, quicker: the lines retract while the bronze comes
+   back. Reduced motion (the global rule) makes it a plain swap.      ── */
+.lady-justice {
+  --lj-ease: cubic-bezier(0.65, 0, 0.35, 1);
+}
+.lady-justice__photo {
+  transition:
+    opacity 0.9s var(--lj-ease),
+    filter 0.9s var(--lj-ease),
+    transform 1.2s var(--lj-ease);
+}
+.lady-justice:hover .lady-justice__photo {
+  opacity: 0;
+  filter: grayscale(1) blur(3px);
+  transform: scale(0.985);
+}
+.lady-justice__lines {
+  opacity: 0;
+  /* Fade out only once the lines have mostly retracted. */
+  transition: opacity 0.5s ease 0.45s;
+}
+.lady-justice:hover .lady-justice__lines {
+  opacity: 1;
+  transition-delay: 0s;
+}
+.lady-justice__lines path {
+  stroke-dasharray: 1;
+  stroke-dashoffset: 1;
+  transition: stroke-dashoffset 0.9s var(--lj-ease);
+}
+.lady-justice:hover .lady-justice__lines path {
+  stroke-dashoffset: 0;
+  transition-duration: 1.8s;
+}
+.lady-justice:hover .lady-justice__drapery path {
+  transition-delay: 0.35s;
+}
+.lady-justice__edge {
+  stroke: #161513;
+  stroke-width: 2.2;
+  opacity: 0.6;
+}
+
+/* Phones have no hover, so there the photograph IS the figure: no line
+   drawing, and no hover swap (a tap leaves :hover stuck on touch screens,
+   which would fade her out for good). She stands behind the name rather
+   than beside it, so the bronze is held back enough for the black letters
+   to stay readable over her, and fades in once as the page opens. */
+@media (width < 48rem) {
+  .lady-justice__lines {
+    display: none;
   }
-  50% {
-    transform: scale(1.035);
+  .lady-justice__photo,
+  .lady-justice:hover .lady-justice__photo {
+    opacity: 0.42;
+    filter: none;
+    transform: none;
+    transition: none;
+    animation: lady-justice-fade 1.6s var(--lj-ease) 0.3s both;
   }
 }
-.hero-drift {
-  animation: hero-drift 45s ease-in-out infinite;
+@keyframes lady-justice-fade {
+  from {
+    opacity: 0;
+  }
 }
-@media (prefers-reduced-motion: reduce) {
-  .hero-drift {
-    animation: none;
+@keyframes lady-justice-draw {
+  from {
+    stroke-dashoffset: 1;
+  }
+  to {
+    stroke-dashoffset: 0;
   }
 }
 
-/* ── Hero spotlight — contour lines only reveal within a radius of the
-   cursor. Position is written directly as CSS custom properties on
-   mousemove (no React re-render), so this costs one GPU-composited mask
-   lookup, not a repaint. Touch devices have no real hover, so the mask is
-   dropped there and the lines just show normally. ── */
-.hero-spotlight {
-  -webkit-mask-image: radial-gradient(
-    circle 260px at var(--reveal-x, -9999px) var(--reveal-y, -9999px),
-    black 0%,
-    black 55%,
-    transparent 100%
-  );
-  mask-image: radial-gradient(
-    circle 260px at var(--reveal-x, -9999px) var(--reveal-y, -9999px),
-    black 0%,
-    black 55%,
-    transparent 100%
-  );
-  -webkit-mask-repeat: no-repeat;
-  mask-repeat: no-repeat;
+/* ── /services ledger rows (app/services/page.tsx) ──────────────────────
+   Each practice area is a native <details>; Tailwind has no utility for
+   these two parts of it.
+
+   · Safari still draws its own disclosure triangle on a <summary>;
+     `list-none` on the element removes it everywhere else.
+   · Opening animates the panel's height through ::details-content. Only
+     opening: closing is instant, so when a row opens and the open row
+     above it closes, the row just tapped does not slide away under the
+     pointer. Browsers without ::details-content / interpolate-size simply
+     open instantly, and reduced motion opts out.                      ── */
+.ledger-row > summary::-webkit-details-marker {
+  display: none;
 }
-@media (hover: none) {
-  .hero-spotlight {
-    -webkit-mask-image: none;
-    mask-image: none;
+@supports (interpolate-size: allow-keywords) and selector(::details-content) {
+  @media (prefers-reduced-motion: no-preference) {
+    .ledger-row {
+      interpolate-size: allow-keywords;
+    }
+    .ledger-row::details-content {
+      block-size: 0;
+      overflow-y: clip;
+    }
+    .ledger-row[open]::details-content {
+      block-size: auto;
+      transition: block-size 0.55s cubic-bezier(0.2, 0.7, 0.2, 1);
+    }
+  }
+}
+
+/* ═══════════════════════════════════════════════════════════════════════
+   TYPE SYSTEM
+   ───────────────────────────────────────────────────────────────────────
+   One scale for the whole site. Before this, sizes were set per-instance:
+   eyebrows ran 9px/10px/11px/12px, letter-spacing came in five different
+   values (0.2 / 0.25 / 0.3 / 0.35 / 0.4em), and every heading carried its
+   own inline clamp(). The result read as slightly different on every
+   section because it literally was.
+
+   Rules encoded here:
+   · Three tracking tiers only — label, nav, and tight (headings).
+   · Every step is fluid, so nothing needs a per-breakpoint override.
+   · Headings get `text-wrap: balance`, body gets `pretty` — no orphans.
+   · Body copy carries a measure (~65ch); long lines are the single most
+     common readability failure on wide screens.
+
+   These live in @layer components, so a Tailwind utility still wins if a
+   specific element genuinely needs to deviate.
+   ═══════════════════════════════════════════════════════════════════════ */
+@theme {
+  --tracking-label: 0.28em;
+  --tracking-nav: 0.2em;
+}
+
+@layer components {
+  /* ── Serif display: section titles set as plates, not headlines ──── */
+  .t-serif-display {
+    font-family: "PP Editorial Old", var(--font-serif-display), Georgia, serif;
+    font-size: clamp(2.4rem, 7vw, 6rem);
+    font-weight: 400;
+    letter-spacing: 0.01em;
+    line-height: 1;
+    color: var(--color-on-surface);
+  }
+  .t-serif-sm {
+    font-family: "PP Editorial Old", var(--font-serif-display), Georgia, serif;
+    font-weight: 400;
+    letter-spacing: 0.04em;
+  }
+
+  /* ── Eyebrow: the small uppercase label above a title ────────────── */
+  .t-eyebrow {
+    font-family: var(--font-label);
+    font-size: 0.6875rem;
+    line-height: 1.4;
+    font-weight: 400;
+    text-transform: uppercase;
+    letter-spacing: var(--tracking-label);
+    color: var(--color-primary-container);
+  }
+  .t-eyebrow-muted {
+    color: color-mix(in srgb, var(--color-on-surface) 40%, transparent);
+  }
+
+  /* ── Display: the oversized hero line of a landing page ────────── */
+  .t-display {
+    font-family: var(--font-app);
+    font-style: normal;
+    /* A grotesk at display size needs weight and negative tracking to hold
+       the line; a serif got the same job done with stroke contrast. */
+    font-weight: 500;
+    font-size: clamp(2.75rem, 6.8vw, 6.25rem);
+    line-height: 0.98;
+    letter-spacing: -0.035em;
+    text-wrap: balance;
+    color: var(--color-on-surface);
+  }
+  /* One step down: long article titles, the form page's heading and the
+     /services section plates. (Every landing-page hero — /services,
+     /areas, /contact, /blog and the local pages — uses .t-display.) */
+  .t-display-sm {
+    font-family: var(--font-app);
+    font-style: normal;
+    font-weight: 500;
+    font-size: clamp(2.25rem, 5.2vw, 4.5rem);
+    line-height: 1.02;
+    letter-spacing: -0.03em;
+    text-wrap: balance;
+    color: var(--color-on-surface);
+  }
+
+  /* ── The keyword subline that sits inside the H1 ─────────────────── */
+  .t-hero-sub {
+    font-family: var(--font-body);
+    font-size: clamp(1.0625rem, 1.6vw, 1.45rem);
+    line-height: 1.45;
+    font-weight: 300;
+    letter-spacing: 0;
+    text-wrap: pretty;
+    color: var(--color-on-surface-variant);
+  }
+
+  /* ── Section heading (h2) ────────────────────────────────────────── */
+  .t-section {
+    font-family: var(--font-app);
+    font-style: normal;
+    font-weight: 500;
+    font-size: clamp(1.75rem, 3.2vw, 2.85rem);
+    line-height: 1.15;
+    letter-spacing: -0.025em;
+    text-wrap: balance;
+    color: var(--color-on-surface);
+  }
+
+  /* ── Card / sub-heading (h3) ─────────────────────────────────────── */
+  .t-card {
+    font-family: var(--font-app);
+    font-style: normal;
+    font-weight: 500;
+    font-size: clamp(1.15rem, 1.6vw, 1.5rem);
+    line-height: 1.35;
+    letter-spacing: -0.015em;
+    text-wrap: balance;
+    color: var(--color-on-surface);
+  }
+
+  /* ── Lede: the intro paragraph under a heading ───────────────────── */
+  .t-lede {
+    font-family: var(--font-body);
+    font-size: clamp(1.0625rem, 1.3vw, 1.25rem);
+    line-height: 1.65;
+    font-weight: 300;
+    text-wrap: pretty;
+    color: var(--color-on-surface-variant);
+  }
+
+  /* ── Body copy ───────────────────────────────────────────────────── */
+  .t-body {
+    font-family: var(--font-body);
+    font-size: 1.0625rem;
+    line-height: 1.75;
+    font-weight: 300;
+    text-wrap: pretty;
+    color: var(--color-secondary-noir);
+  }
+  .t-body-sm {
+    font-family: var(--font-body);
+    font-size: 0.9375rem;
+    line-height: 1.7;
+    font-weight: 300;
+    text-wrap: pretty;
+    color: var(--color-secondary-noir);
+  }
+
+  /* ── Meta: dates, captions, counters ─────────────────────────────── */
+  .t-meta {
+    font-family: var(--font-label);
+    font-size: 0.75rem;
+    font-weight: 400;
+    line-height: 1.5;
+    letter-spacing: var(--tracking-nav);
+    text-transform: uppercase;
+    color: color-mix(in srgb, var(--color-on-surface) 45%, transparent);
+  }
+
+  /* ── Interactive label: nav items, buttons, inline links ─────────── */
+  .t-action {
+    font-family: var(--font-label);
+    font-size: 0.75rem;
+    line-height: 1;
+    font-weight: 400;
+    text-transform: uppercase;
+    letter-spacing: var(--tracking-nav);
+  }
+
+  /* ── Pull quote: light, upright, display-sized. Used once. ──────── */
+  .t-quote {
+    font-family: var(--font-app);
+    font-weight: 300;
+    font-style: normal;
+    font-size: clamp(1.6rem, 3vw, 2.6rem);
+    line-height: 1.25;
+    letter-spacing: -0.015em;
+    text-wrap: balance;
+    color: var(--color-on-surface);
+  }
+
+  /* ── Measure: cap line length. Long lines are the commonest
+        readability failure on wide screens. ────────────────────────── */
+  .measure {
+    max-width: 65ch;
+  }
+  .measure-narrow {
+    max-width: 48ch;
+  }
+  .measure-wide {
+    max-width: 78ch;
+  }
+
+  /* ── Vertical rhythm between stacked paragraphs ──────────────────── */
+  .stack-text > * + * {
+    margin-top: 1.25em;
   }
 }

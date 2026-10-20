@@ -1,7 +1,9 @@
 "use client";
 import { useScroll, useSpring, motion } from "framer-motion";
+import { useIsStudio } from "./is-studio";
 
 export function ScrollProgress() {
+  const isStudio = useIsStudio();
   const { scrollYProgress } = useScroll();
   // Spring smoothing so it doesn't jank at the start/end
   const scaleX = useSpring(scrollYProgress, {
@@ -9,6 +11,8 @@ export function ScrollProgress() {
     damping: 28,
     restDelta: 0.001,
   });
+
+  if (isStudio) return null;
 
   return (
     <motion.div

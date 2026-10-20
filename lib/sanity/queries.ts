@@ -14,6 +14,7 @@ export type SanityBlock = {
 
 export type SanityPost = {
   _id: string
+  _updatedAt?: string
   slug: string
   category: string
   publishedAt: string
@@ -26,6 +27,7 @@ export type SanityPost = {
 
 const postFields = `
   _id,
+  _updatedAt,
   "slug": slug.current,
   category,
   publishedAt,

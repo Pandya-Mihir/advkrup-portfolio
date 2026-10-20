@@ -1,6 +1,9 @@
 import Link from "next/link";
-import { Linkedin, Mail, Phone, MessageCircle, Scale } from "lucide-react";
+import { Linkedin, Mail, Phone, MessageCircle, Scale, MapPin } from "lucide-react";
 import { AnimatedDock } from "@/components/ui/animated-dock";
+import { PRACTICE } from "@/lib/seo/site";
+import { AREA_PAGES, SERVICE_PAGES } from "@/lib/seo/locations";
+import { NAV_LINKS } from "@/lib/nav";
 
 const socialItems = [
   {
@@ -36,6 +39,12 @@ const socialItems = [
     ),
   },
   {
+    link: PRACTICE.googleBusinessProfile,
+    target: "_blank",
+    label: "Google Business Profile",
+    Icon: <MapPin size={16} />,
+  },
+  {
     link: "/contact",
     label: "Consult",
     Icon: <Scale size={16} />,
@@ -44,26 +53,36 @@ const socialItems = [
 
 export function Footer() {
   return (
-    <footer className="w-full flex flex-col justify-end bg-[#1b1b1b]">
+    <footer data-rail className="w-full flex flex-col justify-end bg-[#eeebe5]">
       <div className="w-full px-8 md:px-12 py-12 grid grid-cols-1 md:grid-cols-2 gap-12">
         {/* Left */}
         <div className="space-y-10">
-          <p className="text-[#e3beb9] max-w-sm font-light tracking-wide leading-relaxed">
+          <p className="t-body measure-narrow">
             Expert Land &amp; Revenue Law representation in Ahmedabad, Gujarat.
             Precision advocacy for those who demand excellence.
           </p>
           <div className="space-y-1">
-            <p className="font-label uppercase tracking-[0.2em] text-[10px] text-[#fe5545]">Phone</p>
-            <p className="text-[#e2e2e2] text-lg">+91 81288 00351</p>
+            <p className="t-eyebrow">Phone</p>
+            <a
+              href={`tel:${PRACTICE.telephone}`}
+              className="t-card text-[#161513] hover:text-[#fe5545] transition-colors"
+            >
+              {PRACTICE.telephoneDisplay}
+            </a>
           </div>
           <div className="space-y-1">
-            <p className="font-label uppercase tracking-[0.2em] text-[10px] text-[#fe5545]">Email</p>
-            <p className="text-[#e2e2e2] text-lg">adv.krupalsavjani@gmail.com</p>
+            <p className="t-eyebrow">Email</p>
+            <a
+              href={`mailto:${PRACTICE.email}`}
+              className="t-card text-[#161513] hover:text-[#fe5545] transition-colors break-all"
+            >
+              {PRACTICE.email}
+            </a>
           </div>
 
           {/* Animated Social Dock */}
           <div>
-            <p className="font-label uppercase tracking-[0.2em] text-[10px] text-[#fe5545] mb-5">
+            <p className="t-eyebrow mb-5">
               Connect
             </p>
             <AnimatedDock items={socialItems} />
@@ -73,48 +92,108 @@ export function Footer() {
         {/* Right */}
         <div className="grid grid-cols-2 gap-12">
           <div className="flex flex-col space-y-4">
-            <span className="font-label uppercase tracking-[0.2em] text-[10px] text-[#fe5545] mb-2">
+            <span className="t-eyebrow mb-2">
               Navigate
             </span>
-            {[
-              { href: "/", label: "Home" },
-              { href: "/services", label: "Services" },
-              { href: "/blog", label: "Journal" },
-              { href: "/contact", label: "Contact" },
-            ].map((link) => (
+            {NAV_LINKS.map((link) => (
               <Link
                 key={link.href}
                 href={link.href}
-                className="text-[#e2e2e2]/40 hover:text-[#e2e2e2] transition-colors font-label uppercase tracking-widest text-xs"
+                className="t-action text-[#161513]/60 hover:text-[#161513] transition-colors duration-200"
               >
                 {link.label}
               </Link>
             ))}
           </div>
           <div className="flex flex-col space-y-4">
-            <span className="font-label uppercase tracking-[0.2em] text-[10px] text-[#fe5545] mb-2">
+            <span className="t-eyebrow mb-2">
               Office
             </span>
-            <span className="text-[#e2e2e2]/40 font-label text-xs leading-relaxed">
-              C-1207, Titanium Business Park
+            <address className="not-italic flex flex-col space-y-1">
+              <span className="t-body-sm text-[#161513]/60">
+                {PRACTICE.address.street}
+              </span>
+              <span className="t-body-sm text-[#161513]/60">
+                {PRACTICE.address.locality} — {PRACTICE.address.postalCode}
+              </span>
+              <span className="t-body-sm text-[#161513]/60">
+                {PRACTICE.address.region}, {PRACTICE.address.countryName}
+              </span>
+            </address>
+            <span className="t-body-sm text-[#161513]/60 mt-2">
+              {PRACTICE.openingHours.display}
             </span>
-            <span className="text-[#e2e2e2]/40 font-label text-xs">Ahmedabad — 380007</span>
-            <span className="text-[#e2e2e2]/40 font-label text-xs">Gujarat, India</span>
-            <span className="text-[#e2e2e2]/40 font-label text-xs mt-2">Mon–Sat, 10am–7pm</span>
+            <a
+              href={PRACTICE.googleBusinessProfile}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="t-action text-[#fe5545] hover:text-[#161513] transition-colors duration-200 mt-2"
+            >
+              Directions →
+            </a>
           </div>
         </div>
       </div>
 
-      <div className="px-8 md:px-12 py-8 flex flex-col md:flex-row justify-between border-t border-[#5b403c]/40 text-[10px] font-label tracking-[0.2em] text-[#e2e2e2]/40 gap-4">
-        <div>© 2025 ADV. KRUPAL SAVJANI. ALL RIGHTS RESERVED.</div>
-        <div className="italic font-headline opacity-80 text-sm">
+      {/* ── Areas & matters ─────────────────────────────────────────
+          Sitewide links so every local landing page is one hop from every
+          other page — crawlable from anywhere, including deep blog pages. */}
+      <nav
+        aria-label="Areas served and practice guides"
+        className="px-8 md:px-12 py-10 border-t border-[#cdc6b9]/40 grid grid-cols-1 md:grid-cols-2 gap-10"
+      >
+        <div>
+          <div className="mb-5 flex items-baseline justify-between gap-6">
+            <p className="t-eyebrow">Areas Served</p>
+            <Link
+              href="/areas"
+              className="t-action text-[#161513]/60 hover:text-[#fe5545] transition-colors duration-200"
+            >
+              All areas →
+            </Link>
+          </div>
+          <ul className="flex flex-wrap gap-x-6 gap-y-3">
+            {AREA_PAGES.map((area) => (
+              <li key={area.slug}>
+                <Link
+                  href={`/${area.slug}`}
+                  className="t-body-sm text-[#161513]/60 hover:text-[#fe5545] transition-colors duration-200"
+                >
+                  Advocate in {area.place.name}
+                </Link>
+              </li>
+            ))}
+          </ul>
+        </div>
+        <div>
+          <p className="t-eyebrow mb-5">
+            By Matter
+          </p>
+          <ul className="flex flex-wrap gap-x-6 gap-y-3">
+            {SERVICE_PAGES.map((svc) => (
+              <li key={svc.slug}>
+                <Link
+                  href={`/${svc.slug}`}
+                  className="t-body-sm text-[#161513]/60 hover:text-[#fe5545] transition-colors duration-200"
+                >
+                  {svc.displayLines.join(" ")}
+                </Link>
+              </li>
+            ))}
+          </ul>
+        </div>
+      </nav>
+
+      <div className="t-meta px-8 md:px-12 py-8 flex flex-col md:flex-row justify-between border-t border-[#cdc6b9]/40 gap-4">
+        <div>© {new Date().getFullYear()} ADV. KRUPAL SAVJANI. ALL RIGHTS RESERVED.</div>
+        <div className="opacity-80">
           Land &amp; Revenue Law · Ahmedabad, Gujarat
         </div>
       </div>
 
       {/* The Advocate — centered watermark at very bottom */}
       <div
-        className="w-full text-center font-headline italic leading-none text-[#e2e2e2]/45 select-none overflow-hidden"
+        className="hidden w-full select-none overflow-hidden text-center font-headline leading-none text-[#161513]/45 md:block"
         style={{ fontSize: "clamp(3rem, 10vw, 8rem)" }}
         aria-hidden="true"
       >

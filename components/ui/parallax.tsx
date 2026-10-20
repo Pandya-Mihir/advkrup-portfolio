@@ -2,6 +2,7 @@
 import { useRef, ReactNode } from "react";
 import { motion, useScroll, useTransform } from "framer-motion";
 import { useAnimationGate } from "./animation-gate";
+import { useHydrated } from "./use-hydrated";
 
 /**
  * ParallaxWrapper — children move at `speed * 100`% of scroll distance.
@@ -47,9 +48,27 @@ export function WordReveal({
 }) {
   const words = text.split(" ");
   const gateReady = useAnimationGate();
+  const hydrated = useHydrated();
+
+  /*
+   * Server HTML gets the plain phrase. The animated version staggers each
+   * word up from `opacity: 0`, which would otherwise mean every headline on
+   * the site — including each page's H1 — shipped as transparent text.
+   */
+  if (!hydrated) {
+    return <span className={`inline-flex flex-wrap leading-[inherit] ${className}`}>{text}</span>;
+  }
+
   return (
     <span className={`inline-flex flex-wrap leading-[inherit] ${className}`}>
       {words.map((word, i) => (
+        /*
+         * The `{" "}` is a real space in the DOM, which matters: the visual
+         * gap comes from `mr-[0.25em]`, so without it `textContent` reads
+         * "TheLandAdvocate" and a crawler never sees the phrase. A flex
+         * container drops whitespace-only text nodes, so it costs nothing
+         * visually.
+         */
         <span key={i} className="overflow-hidden inline-flex leading-[1.2] mr-[0.25em]">
           <motion.span
             className="inline-block transform-gpu will-change-transform"
@@ -63,6 +82,7 @@ export function WordReveal({
           >
             {word}
           </motion.span>
+          {i < words.length - 1 ? " " : ""}
         </span>
       ))}
     </span>

@@ -1,253 +1,268 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 import Image from "next/image";
 import { Navbar } from "@/components/ui/navbar";
 import { Footer } from "@/components/ui/footer";
 import {
-  FadeUp,
   SlideIn,
   StaggerContainer,
   StaggerItem,
-  DrawLine,
 } from "@/components/ui/animations";
-import { ParallaxWrapper, WordReveal } from "@/components/ui/parallax";
-import { BackgroundPaths } from "@/components/ui/background-paths";
+import { ParallaxWrapper } from "@/components/ui/parallax";
+import { LadyJustice } from "@/components/ui/lady-justice";
+import { KrupalWordmark } from "@/components/ui/krupal-letters";
+import { CoreMandates } from "@/components/ui/core-mandates";
+import { HorizontalTrack } from "@/components/ui/horizontal-track";
+import { LocalTime } from "@/components/ui/local-time";
+import { JsonLd } from "@/components/seo/json-ld";
+import { breadcrumbSchema, graph, webPageSchema } from "@/lib/seo/schema";
+
+export const metadata: Metadata = {
+  // `absolute` — the root layout's title.default already names the practice,
+  // so the "| Adv. Krupal Savjani" suffix would be a duplication here.
+  title: {
+    absolute: "Land & Revenue Advocate in Ahmedabad | Adv. Krupal P. Savjani",
+  },
+  description:
+    "Adv. Krupal P. Savjani is an advocate in Ahmedabad practising land and revenue law — land disputes, 7/12 Utara and record corrections, title verification, sale deeds, and representation before the revenue authorities and the courts. Office at Makarba, Ahmedabad.",
+  alternates: { canonical: "/" },
+};
 
 export default function Home() {
   return (
-    <main className="bg-[#131313] text-[#e2e2e2]">
+    <main className="bg-[#f6f4f0] text-[#161513]">
+      <JsonLd
+        id="schema-home"
+        data={graph(
+          webPageSchema({
+            path: "/",
+            name: "Land & Revenue Advocate in Ahmedabad — Adv. Krupal P. Savjani",
+            description:
+              "Land and revenue law practice in Ahmedabad, Gujarat: land disputes, revenue records, title verification and property documentation.",
+          }),
+          breadcrumbSchema([{ name: "Home", path: "/" }]),
+        )}
+      />
+
       <Navbar />
 
-      {/* ── Hero ──────────────────────────────────────────────────── */}
-      <section className="relative min-h-screen flex items-center pt-48 px-12 md:px-20">
+      <HorizontalTrack>
+        {/*
+          ── Hero ───────────────────────────────────────────────────────
+          One screen, two things: the figure and the name. Everything that
+          used to sit here — the eyebrow, the headline block, the discipline
+          tags, the lede and the two calls to action — is gone; the practice
+          areas and the consultation link are a scroll away, in the sections
+          that are actually about them.
 
-        {/* Layer 0 — animated SVG evidence threads (lowest layer) */}
-        <BackgroundPaths />
+          The page's H1 travels with the wordmark (see KrupalWordmark), so
+          removing this block cost the layout nothing and the document
+          nothing.
+        */}
+        <section
+          data-rail
+          className="relative isolate flex w-full shrink-0 min-h-screen md:h-full md:min-h-0 flex-col justify-end overflow-hidden px-6 pb-10 pt-32 md:px-10 md:pb-14 md:pt-36"
+        >
+          {/* Held to the left two-thirds so the figure stands clear of the
+              name instead of being read through it. Her height drives her size
+              (the vw cap only catches extreme windows), and the clearance
+              works because her ink in the band the letters occupy is all
+              body and drapery, which starts ~39% into her box — the scales,
+              which reach the far left of it, hang well above the letters.
+              Below md she is hidden, so the name takes the full width. */}
+          <KrupalWordmark className="w-full md:max-w-[74%] lg:max-w-[77%] xl:max-w-[80%]" />
 
-        {/* Layer 3 — hero text */}
-        <div className="relative z-10 w-full max-w-7xl">
+          {/* The foot rail, with Lady Justice standing on its line.
 
-          {/* Case number — editorial micro-detail */}
-          <FadeUp delay={0.05} className="mb-6 flex items-center gap-4">
-            <span className="w-6 h-px bg-[#fe5545]" />
-            <span className="font-label uppercase tracking-[0.35em] text-[9px] text-[#fe5545]">
-              Adv. Krupal Savjani — Est. Gujarat Bar
-            </span>
-          </FadeUp>
+              She is positioned against this wrapper rather than the section,
+              so her base lands on the rule whatever the rail's height comes
+              to (it wraps on narrow screens): `bottom-full` puts her bottom
+              edge on the wrapper's top edge, which is exactly where the
+              border is drawn, and the photo's bottom row is the pedestal's
+              own edge. The wrapper sets no z-index, so she still layers
+              under the name (z-[5] against its z-10) as before.
 
-          {/* Main headline */}
-          <h1 className="font-hero italic leading-[0.85]  text-[#e2e2e2]"
-            style={{ fontSize: "clamp(4.5rem, 14vw, 12rem)" }}>
-            <WordReveal text="The Land" delay={0.1} />
-            <br />
-            <WordReveal text="Advocate" delay={0.35} />
-          </h1>
+              Her height is what is left above the rail after ~7rem of
+              headroom; the width follows from her 675×1100 aspect ratio,
+              with the vw cap only catching very wide-and-short windows.
+              `-right-10` cancels the section's padding so she stands at the
+              hero's edge, as before.
 
-          {/* Discipline tags — appear after headline */}
-          <FadeUp delay={0.55} className="mt-8 flex flex-wrap gap-3">
-            {[
-              { label: "Land Disputes", accent: true },
-              { label: "Revenue Records", accent: false },
-              { label: "Property Law", accent: false },
-            ].map(({ label, accent }) => (
-              <span
-                key={label}
-                className={
-                  accent
-                    ? "font-label uppercase tracking-[0.25em] text-[9px] bg-[#fe5545] text-white px-4 py-2"
-                    : "font-label uppercase tracking-[0.25em] text-[9px] text-[#fe5545] border border-[#fe5545]/40 px-4 py-2 hover:border-[#fe5545] transition-colors duration-300"
-                }
-              >
-                {label}
+              On a phone she is the photograph, faded back (see
+              globals.css): 64% of the screen tall, standing on the same
+              line at the right edge and reaching up behind the name, light
+              enough that the solid letters still read over her. `svh` so
+              she does not resize as the browser's toolbar slides away. */}
+          <div className="relative mt-7">
+            <LadyJustice className="absolute -right-6 bottom-full z-[5] h-[64svh] max-w-[86vw] text-[#161513] md:-right-10 md:h-[calc(100vh-13rem)] md:max-w-[34vw]" />
+
+            {/* Foot rail: where the practice is, and that it is open. Both sit
+              at the left — the right end of the rail runs under the statue's
+              pedestal, where a label would be lost against the bronze. */}
+            <div className="relative z-10 flex flex-wrap items-baseline gap-x-12 gap-y-3 border-t border-black/10 pt-5">
+              <span className="t-eyebrow t-eyebrow-muted">
+                Ahmedabad, Gujarat <LocalTime className="ml-2" />
               </span>
-            ))}
-          </FadeUp>
-
-          {/* Subtitle + CTA */}
-          <FadeUp delay={0.7} className="mt-8 md:mt-10 max-w-xl md:ml-[55%]">
-            <p className="text-lg md:text-xl font-light leading-relaxed text-[#e3beb9]/80 italic mb-10">
-              Precision in land &amp; revenue litigation. Strategic counsel for those who demand
-              clarity in the complex terrain of Gujarat property law.
-            </p>
-            <div className="flex flex-col sm:flex-row gap-4 md:justify-end">
-              <Link
-                href="/contact"
-                className="group relative inline-flex items-center gap-3 text-[#fe5545] font-label uppercase tracking-[0.3em] text-sm overflow-hidden border border-[#fe5545] px-6 py-3"
-              >
-                {/* fill on hover */}
-                <span className="absolute inset-0 bg-[#fe5545] translate-y-full group-hover:translate-y-0 transition-transform duration-300 ease-[cubic-bezier(0.16,1,0.3,1)]" />
-                <span className="relative group-hover:text-white transition-colors duration-300">
-                  Request Consultation
-                </span>
-                <span className="relative group-hover:translate-x-1 group-hover:text-white transition-all duration-300">→</span>
-              </Link>
-              <Link
-                href="/services"
-                className="group inline-flex items-center gap-3 text-[#e2e2e2]/40 font-label uppercase tracking-[0.3em] text-sm px-6 py-3 hover:text-[#e2e2e2] transition-colors duration-300"
-              >
-                View Practice Areas
-              </Link>
+              <span className="t-eyebrow t-eyebrow-muted hidden sm:inline">
+                Accepting briefs
+              </span>
             </div>
-          </FadeUp>
-        </div>
-
-      </section>
-
-      {/* ── Practice Areas ────────────────────────────────────────── */}
-      <section className="py-16 md:py-24 px-8 md:px-12 bg-[#131313]">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-24">
-          {/* Left column */}
-          <div className="space-y-12">
-            <FadeUp>
-              <h2 className="font-headline italic text-5xl text-[#e2e2e2] mb-4">Core Mandates</h2>
-            </FadeUp>
-
-            <FadeUp delay={0.1}>
-              <DrawLine className="h-px bg-[#5b403c]/30 w-full" />
-              <div className="pt-12">
-                <span className="font-headline italic text-7xl text-[#fe5545] block mb-6">01</span>
-                <h3 className="font-headline text-4xl mb-6">Land Dispute Resolution</h3>
-                <p className="text-[#e3beb9] text-lg leading-relaxed max-w-md">
-                  Structural legal defense in land ownership, possession, and boundary disputes.
-                  We navigate the revenue hierarchy to achieve decisive outcomes.
-                </p>
-              </div>
-            </FadeUp>
-
-            <FadeUp delay={0.2}>
-              <DrawLine className="h-px bg-[#5b403c]/30 w-full" />
-              <div className="pt-12">
-                <span className="font-headline italic text-7xl text-[#fe5545] block mb-6">02</span>
-                <h3 className="font-headline text-4xl mb-6">Revenue Records</h3>
-                <p className="text-[#e3beb9] text-lg leading-relaxed max-w-md">
-                  Expert navigation of the 7/12 Utara, 8-A, and village form records.
-                  Corrections, mutations, and revenue court proceedings executed with precision.
-                </p>
-              </div>
-            </FadeUp>
           </div>
+        </section>
 
-          {/* Right column — offset downward on desktop */}
-          <div className="md:mt-48 space-y-12">
-            <FadeUp delay={0.15}>
-              <DrawLine className="h-px bg-[#5b403c]/30 w-full" />
-              <div className="pt-12">
-                <span className="font-headline italic text-7xl text-[#fe5545] block mb-6">03</span>
-                <h3 className="font-headline text-4xl mb-6">Property Documentation</h3>
-                <p className="text-[#e3beb9] text-lg leading-relaxed max-w-md">
-                  Title verification, sale deeds, gift deeds, and NOC procurement.
-                  Meticulous documentation that forecloses future disputes.
-                </p>
-              </div>
-            </FadeUp>
+        <CoreMandates className="w-full shrink-0 min-h-screen md:h-full md:min-h-0" />
 
-            <FadeUp delay={0.3}>
-              <div className="pt-12">
-                <Link
-                  href="/services"
-                  className="group relative inline-flex items-center gap-2 text-[#e2e2e2] font-label uppercase tracking-[0.2em] text-xs pb-1"
-                >
-                  <span className="group-hover:text-[#fe5545] transition-colors duration-300">
-                    View all practice areas
+        {/* ── Journal / Editorial Teaser ─────────────────────────────── */}
+        <section
+          data-rail
+          className="relative flex w-full shrink-0 min-h-screen md:h-full md:min-h-0 items-center overflow-hidden bg-[#eeebe5]"
+        >
+          <div className="grid grid-cols-1 md:grid-cols-12 w-full min-h-[600px]">
+            {/* Image with parallax */}
+            <SlideIn
+              from="left"
+              className="md:col-span-7 relative overflow-hidden min-h-[300px] md:min-h-0"
+            >
+              <ParallaxWrapper
+                speed={0.15}
+                className="w-full h-full absolute inset-0"
+              >
+                <Image
+                  src="https://images.unsplash.com/photo-1505664194779-8beaceb93744?w=1600&q=90"
+                  alt="Law library — legal books and documents"
+                  fill
+                  sizes="(min-width: 768px) 58vw, 100vw"
+                  className="object-cover scale-105"
+                />
+              </ParallaxWrapper>
+            </SlideIn>
+
+            {/* Text */}
+            <SlideIn
+              from="right"
+              delay={0.1}
+              className="md:col-span-5 flex flex-col justify-center px-8 md:px-12 py-16 bg-[#eeebe5]"
+            >
+              <StaggerContainer>
+                <StaggerItem>
+                  <span className="t-eyebrow mb-12 block">
+                    Journal / Legal Insights
                   </span>
-                  <span className="group-hover:translate-x-1.5 transition-transform duration-300 text-[#fe5545]">
-                    →
-                  </span>
-                  <span className="absolute bottom-0 left-0 h-px bg-[#e2e2e2] w-full group-hover:bg-[#fe5545] transition-colors duration-300" />
-                </Link>
-              </div>
-            </FadeUp>
+                </StaggerItem>
+                <StaggerItem>
+                  <h2 className="t-section mb-12">
+                    The Anatomy of Land Rights.
+                  </h2>
+                </StaggerItem>
+                <StaggerItem>
+                  <p className="t-lede measure-narrow mb-12">
+                    Exploring the statutory framework of the Gujarat Land
+                    Revenue Code and its practical implications for landowners
+                    and claimants.
+                  </p>
+                </StaggerItem>
+                <StaggerItem>
+                  <Link
+                    href="/blog"
+                    className="group flex items-center space-x-4"
+                  >
+                    <span className="t-action text-[#161513] border-b border-[#161513] group-hover:text-[#fe5545] group-hover:border-[#fe5545] transition-colors duration-200">
+                      Read the Journal
+                    </span>
+                    <span className="t-action text-[#fe5545] group-hover:translate-x-2 transition-transform duration-300 inline-block">
+                      →
+                    </span>
+                  </Link>
+                </StaggerItem>
+              </StaggerContainer>
+            </SlideIn>
           </div>
-        </div>
-      </section>
+        </section>
+      </HorizontalTrack>
 
-      {/* ── Journal / Editorial Teaser ─────────────────────────────── */}
-      <section className="min-h-[600px] relative flex items-center bg-[#1b1b1b]">
-        <div className="grid grid-cols-1 md:grid-cols-12 w-full min-h-[600px]">
-          {/* Image with parallax */}
-          <SlideIn from="left" className="md:col-span-7 relative overflow-hidden min-h-[300px] md:min-h-0">
-            <ParallaxWrapper speed={0.15} className="w-full h-full absolute inset-0">
-              <Image
-                src="https://images.unsplash.com/photo-1505664194779-8beaceb93744?w=1600&q=90"
-                alt="Law library — legal books and documents"
-                fill
-                sizes="(min-width: 768px) 58vw, 100vw"
-                className="object-cover grayscale contrast-125 brightness-75 scale-110 hover:scale-[1.15] transition-transform duration-700"
-              />
-            </ParallaxWrapper>
-            <div className="absolute inset-0 bg-[#131313]/50 hover:bg-[#131313]/30 transition-colors duration-500 z-10" />
-          </SlideIn>
-
-          {/* Text */}
-          <SlideIn from="right" delay={0.1} className="md:col-span-5 flex flex-col justify-center px-8 md:px-12 py-16 bg-[#1b1b1b]">
-            <StaggerContainer>
-              <StaggerItem>
-                <span className="font-label uppercase tracking-[0.4em] text-[10px] text-[#fe5545] mb-12 block">
-                  Journal / Legal Insights
-                </span>
-              </StaggerItem>
-              <StaggerItem>
-                <h2 className="font-headline italic text-5xl md:text-7xl leading-tight mb-12">
-                  The Anatomy of Land Rights.
-                </h2>
-              </StaggerItem>
-              <StaggerItem>
-                <p className="text-[#e3beb9] text-xl leading-relaxed mb-12 max-w-md">
-                  Exploring the statutory framework of the Gujarat Land Revenue Code and its
-                  practical implications for landowners and claimants.
-                </p>
-              </StaggerItem>
-              <StaggerItem>
-                <Link href="/blog" className="group flex items-center space-x-4">
-                  <span className="font-label uppercase tracking-[0.2em] text-sm text-[#e2e2e2] border-b border-[#e2e2e2] group-hover:text-[#fe5545] group-hover:border-[#fe5545] transition-colors duration-300">
-                    Read the Journal
-                  </span>
-                  <span className="text-[#fe5545] group-hover:translate-x-2 transition-transform duration-300 inline-block">
-                    →
-                  </span>
-                </Link>
-              </StaggerItem>
-            </StaggerContainer>
-          </SlideIn>
-        </div>
-      </section>
+      {/*
+        The sideways run ends with the journal. From here the page scrolls
+        down as an ordinary page: the closing quote and call to action, then
+        the footer. The track's spacer releases its sticky stage when the
+        journal panel has slid fully into view, so the next section simply
+        rises in from below — no extra wiring needed.
+      */}
 
       {/* ── Quote + CTA ──────────────────────────────────────────── */}
-      <section className="py-32 md:py-48 px-8 md:px-12 bg-[#131313] grid grid-cols-1 md:grid-cols-2 gap-24 items-center">
+      <section
+        data-rail
+        className="w-full min-h-screen grid grid-cols-1 content-center items-center gap-16 overflow-hidden bg-[#f6f4f0] px-8 py-24 md:grid-cols-2 md:gap-24 md:px-12"
+      >
         <SlideIn from="left">
-          <span
-            className="font-headline italic text-[14rem] md:text-[20rem] leading-none text-[#353535]/40 block select-none"
+          {/*
+              The opening quote mark, drawn rather than typeset: PP Neue
+              Montreal's “ outline, cropped to its ink. As a 20rem glyph
+              pulled up under the text with a negative margin, where it
+              landed depended on the font's side bearing and line box, so
+              every font change moved it — off the text's left edge and down
+              into the first line. As ink-cropped SVG its left edge IS the
+              text's left edge, and the gap below it is just the margin.
+
+              One optical correction: the I that opens the quote carries a
+              left side bearing of 0.082em, so the text's visible edge sits
+              that far in from its box. The mark takes `t-quote` only so that
+              `em` here is the quote's font size and the shift tracks its
+              clamp() at every width; the colour utility overrides the
+              class's own, and the height is in rem, so nothing else of it
+              applies.
+            */}
+          <svg
+            viewBox="0 0 218 205"
             aria-hidden="true"
+            focusable="false"
+            className="t-quote mb-6 ml-[0.082em] block h-12 w-auto text-[#d2ccc0]/40 md:mb-8 md:h-16"
           >
-            &ldquo;
-          </span>
-          <p className="font-headline italic text-4xl md:text-5xl -mt-40 md:-mt-56 relative z-10 leading-tight">
-            In land law, the strength of your title is only as certain as the precision of
-            your documentation.
+            <path
+              fill="currentColor"
+              d="M0 205H84V121H43C42 73 52 54 84 43V0C16 21 0 64 0 121ZM176 121C176 73 185 54 217 43V0C149 21 134 64 134 121V205H218V121Z"
+            />
+          </svg>
+          <p className="t-quote measure">
+            In land law, the strength of your title is only as certain as the
+            precision of your documentation.
           </p>
         </SlideIn>
 
         <SlideIn from="right" delay={0.1} className="md:pl-16 space-y-12">
-          <h4 className="font-label uppercase tracking-[0.2em] text-xs text-[#e2e2e2]/40">
-            Begin Your Case
-          </h4>
-          <p className="text-[#e3beb9] leading-relaxed">
-            Whether you face a land dispute, need revenue record corrections, or require
-            property documentation — professional counsel begins with a single conversation.
+          <h4 className="t-eyebrow t-eyebrow-muted">Begin Your Case</h4>
+          <p className="t-body measure">
+            Whether you face a land dispute, need revenue record corrections, or
+            require property documentation — professional counsel begins with a
+            single conversation.
           </p>
           <Link
             href="/contact"
-            className="group block w-full py-6 text-center text-white bg-[#fe5545] font-label uppercase tracking-[0.3em] text-sm hover:bg-[#e2e2e2] hover:text-[#131313] transition-colors duration-300 relative overflow-hidden"
+            className="t-action block w-full py-6 text-center text-white bg-[#fe5545] hover:bg-[#161513] hover:text-[#f6f4f0] transition-colors duration-200"
           >
             Initiate Consultation
           </Link>
-          <div className="grid grid-cols-2 gap-6 pt-4">
+          {/* Phone and email as contact values: t-card, the same
+                treatment as the footer, /contact and the local pages.
+                Stacked, because at that size the address does not fit
+                half of this column. */}
+          <div className="grid grid-cols-1 gap-6 pt-4">
             <div>
-              <p className="font-label uppercase tracking-[0.2em] text-[10px] text-[#fe5545] mb-2">Phone</p>
-              <p className="text-[#e2e2e2]">+91 81288 00351</p>
+              <p className="t-eyebrow mb-2">Phone</p>
+              <a
+                href="tel:+918128800351"
+                className="t-card text-[#161513] transition-colors hover:text-[#fe5545]"
+              >
+                +91 81288 00351
+              </a>
             </div>
             <div>
-              <p className="font-label uppercase tracking-[0.2em] text-[10px] text-[#fe5545] mb-2">Email</p>
-              <p className="text-[#e2e2e2] text-sm">adv.krupalsavjani@gmail.com</p>
+              <p className="t-eyebrow mb-2">Email</p>
+              <a
+                href="mailto:adv.krupalsavjani@gmail.com"
+                className="t-card break-all text-[#161513] transition-colors hover:text-[#fe5545]"
+              >
+                adv.krupalsavjani@gmail.com
+              </a>
             </div>
           </div>
         </SlideIn>

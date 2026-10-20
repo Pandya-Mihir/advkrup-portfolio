@@ -1,5 +1,6 @@
 "use client";
 import { createContext, useContext, useEffect, useState, ReactNode } from "react";
+import { useIsStudio } from "./is-studio";
 
 /**
  * Site-wide "ready to animate" signal. Stays false until web fonts have
@@ -18,6 +19,7 @@ export function useAnimationGate() {
 }
 
 export function AnimationGateProvider({ children }: { children: ReactNode }) {
+  const isStudio = useIsStudio();
   const [ready, setReady] = useState(false);
 
   useEffect(() => {
@@ -37,15 +39,21 @@ export function AnimationGateProvider({ children }: { children: ReactNode }) {
     };
   }, []);
 
+  // The CMS gets neither the overlay nor the gate: nothing inside Sanity
+  // Studio is waiting on our entrance animations.
+  if (isStudio) {
+    return <AnimationGateContext.Provider value>{children}</AnimationGateContext.Provider>;
+  }
+
   return (
     <AnimationGateContext.Provider value={ready}>
       <div
         aria-hidden="true"
-        className={`fixed inset-0 z-[200] bg-[#131313] flex items-center justify-center transition-opacity duration-500 ${
+        className={`fixed inset-0 z-[200] bg-[#f6f4f0] flex items-center justify-center transition-opacity duration-500 ${
           ready ? "opacity-0 pointer-events-none" : "opacity-100"
         }`}
       >
-        <span className="font-label uppercase tracking-[0.3em] text-[10px] text-[#e2e2e2]/40 animate-pulse">
+        <span className="t-meta animate-pulse">
           Adv. Krupal Savjani
         </span>
       </div>
