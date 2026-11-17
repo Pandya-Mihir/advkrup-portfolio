@@ -15,7 +15,13 @@ import { CoreMandates } from "@/components/ui/core-mandates";
 import { HorizontalTrack } from "@/components/ui/horizontal-track";
 import { LocalTime } from "@/components/ui/local-time";
 import { JsonLd } from "@/components/seo/json-ld";
-import { breadcrumbSchema, graph, webPageSchema } from "@/lib/seo/schema";
+import { FaqSection } from "@/components/seo/faq-section";
+import { breadcrumbSchema, faqSchema, graph, webPageSchema } from "@/lib/seo/schema";
+import { HOME_CLIENTS, HOME_FAQS, HOME_FORUMS, HOME_STEPS } from "@/lib/seo/home";
+import { AREA_PAGES, SERVICE_PAGES } from "@/lib/seo/locations";
+
+/** "Advocate in Makarba, Ahmedabad — Land & Property Law" → "Advocate in Makarba, Ahmedabad" */
+const guideLabel = (h1: string) => h1.split(" — ")[0].split(" for ")[0];
 
 export const metadata: Metadata = {
   // `absolute` — the root layout's title.default already names the practice,
@@ -41,6 +47,7 @@ export default function Home() {
               "Land and revenue law practice in Ahmedabad, Gujarat: land disputes, revenue records, title verification and property documentation.",
           }),
           breadcrumbSchema([{ name: "Home", path: "/" }]),
+          faqSchema(HOME_FAQS, "/"),
         )}
       />
 
@@ -187,6 +194,168 @@ export default function Home() {
         journal panel has slid fully into view, so the next section simply
         rises in from below — no extra wiring needed.
       */}
+
+      {/* ── The practice ─────────────────────────────────────────────
+          Plain text about what the practice does and where matters are
+          heard. The sections above are display type and motion; this is
+          what search and answer engines (and a first-time visitor) read to
+          learn what the practice is. Copy lives in lib/seo/home.ts. */}
+      <section
+        data-rail
+        aria-labelledby="practice-title"
+        className="border-t border-[#cdc6b9]/60 bg-[#f6f4f0] px-6 py-20 md:px-12 md:py-28"
+      >
+        <div className="grid grid-cols-1 gap-10 md:grid-cols-12 md:gap-12">
+          <div className="md:col-span-5">
+            <p className="t-eyebrow mb-4">The practice</p>
+            <h2 id="practice-title" className="t-section">
+              Land, records and title, in Ahmedabad and across Gujarat.
+            </h2>
+          </div>
+          <div className="space-y-6 md:col-span-7">
+            <p className="t-lede measure">
+              Land in Gujarat is held on paper before it is held on the
+              ground. Who owns a parcel, on what tenure and with what
+              restrictions is read from the 7/12 Utara, the 8-A extract, the
+              mutation entries and the registered chain of deeds, and a single
+              wrong entry can hold up a sale, a loan or an inheritance for
+              years.
+            </p>
+            <p className="t-body measure text-[#161513]/75">
+              The practice of Adv. Krupal P. Savjani is built around that paper
+              trail. From the office at Titanium Business Park, Makarba, it
+              advises landowners, buyers, heirs and developers: correcting
+              revenue records, verifying title before money changes hands,
+              drafting the deeds and agreements that transfer land, and
+              carrying disputes through the revenue authorities and the
+              courts.
+            </p>
+            <p className="t-body measure text-[#161513]/75">
+              Most matters begin with the documents rather than the dispute.
+              The first step is to read the 7/12, the 8-A, the mutation entries
+              and the deeds together, find where the record and the facts part
+              ways, and decide which forum can put that right.
+            </p>
+          </div>
+        </div>
+
+        <h3 className="t-eyebrow mt-20 mb-6 md:mt-24">Where a land matter is heard</h3>
+        <ol className="grid grid-cols-1 border-t border-[#cdc6b9]/60 sm:grid-cols-2 sm:gap-x-12 lg:grid-cols-3">
+          {HOME_FORUMS.map((forum, i) => (
+            <li key={forum.name} className="border-b border-[#cdc6b9]/60 py-6 md:py-7">
+              <span aria-hidden className="t-meta mb-3 block text-[#161513]/60">
+                {String(i + 1).padStart(2, "0")}
+              </span>
+              <p className="t-card mb-2">{forum.name}</p>
+              <p className="t-body-sm text-[#161513]/75">{forum.note}</p>
+            </li>
+          ))}
+        </ol>
+      </section>
+
+      {/* ── Who the practice acts for ─────────────────────────────── */}
+      <section
+        data-rail
+        aria-labelledby="clients-title"
+        className="bg-[#eeebe5] px-6 py-20 md:px-12 md:py-28"
+      >
+        <p className="t-eyebrow mb-4">Who the practice acts for</p>
+        <h2 id="clients-title" className="t-section mb-12 md:mb-16">
+          Owners, buyers, heirs and developers.
+        </h2>
+        <ul className="grid grid-cols-1 border-t border-[#cdc6b9] sm:grid-cols-2 sm:gap-x-12 lg:grid-cols-4">
+          {HOME_CLIENTS.map((c) => (
+            <li key={c.who} className="flex flex-col border-b border-[#cdc6b9] py-7 md:py-8">
+              <h3 className="t-card mb-3">{c.who}</h3>
+              <p className="t-body-sm mb-5 text-[#161513]/75">{c.what}</p>
+              <Link
+                href={c.href}
+                className="t-action mt-auto text-[var(--color-accent-ink,#a8321f)] transition-colors duration-200 hover:text-[#161513]"
+              >
+                {c.label} →
+              </Link>
+            </li>
+          ))}
+        </ul>
+      </section>
+
+      {/* ── How a matter is handled ───────────────────────────────── */}
+      <section
+        data-rail
+        aria-labelledby="steps-title"
+        className="bg-[#f6f4f0] px-6 py-20 md:px-12 md:py-28"
+      >
+        <p className="t-eyebrow mb-4">How a matter is handled</p>
+        <h2 id="steps-title" className="t-section mb-12 md:mb-16">
+          From the first document to the final order.
+        </h2>
+        <ol className="grid grid-cols-1 border-t border-[#cdc6b9]/60 sm:grid-cols-2 sm:gap-x-12 lg:grid-cols-4">
+          {HOME_STEPS.map((step, i) => (
+            <li key={step.title} className="border-b border-[#cdc6b9]/60 py-7 md:py-8">
+              <span aria-hidden className="t-meta mb-3 block text-[#fe5545]">
+                Step {i + 1}
+              </span>
+              <h3 className="t-card mb-3">{step.title}</h3>
+              <p className="t-body-sm text-[#161513]/75">{step.body}</p>
+            </li>
+          ))}
+        </ol>
+      </section>
+
+      <FaqSection
+        faqs={HOME_FAQS}
+        eyebrow="Questions"
+        title="What clients ask first"
+        className="border-t border-[#cdc6b9]/60 bg-[#f6f4f0]"
+      />
+
+      {/* ── Guides index ─────────────────────────────────────────────
+          Every local guide, linked from the strongest page on the site
+          with its keyword-bearing name as the anchor text. */}
+      <section
+        data-rail
+        aria-labelledby="guides-title"
+        className="bg-[#eeebe5] px-6 py-20 md:px-12 md:py-28"
+      >
+        <p className="t-eyebrow mb-4">Guides</p>
+        <h2 id="guides-title" className="t-section mb-12 md:mb-16">
+          Find your matter, or your area.
+        </h2>
+        <div className="grid grid-cols-1 gap-12 md:grid-cols-12">
+          <nav aria-label="Guides by matter" className="md:col-span-7">
+            <h3 className="t-eyebrow t-eyebrow-muted mb-4">By matter</h3>
+            <ul className="grid grid-cols-1 border-t border-[#cdc6b9] sm:grid-cols-2 sm:gap-x-10">
+              {SERVICE_PAGES.map((page) => (
+                <li key={page.slug} className="border-b border-[#cdc6b9]">
+                  <Link
+                    href={`/${page.slug}`}
+                    className="t-body-sm group flex items-baseline justify-between gap-4 py-3.5 text-[#161513] transition-colors duration-200 hover:text-[#fe5545]"
+                  >
+                    {guideLabel(page.h1)}
+                    <span aria-hidden className="text-[#fe5545] transition-transform duration-300 group-hover:translate-x-1">→</span>
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </nav>
+          <nav aria-label="Guides by area" className="md:col-span-5">
+            <h3 className="t-eyebrow t-eyebrow-muted mb-4">By area</h3>
+            <ul className="grid grid-cols-1 border-t border-[#cdc6b9]">
+              {AREA_PAGES.map((page) => (
+                <li key={page.slug} className="border-b border-[#cdc6b9]">
+                  <Link
+                    href={`/${page.slug}`}
+                    className="t-body-sm group flex items-baseline justify-between gap-4 py-3.5 text-[#161513] transition-colors duration-200 hover:text-[#fe5545]"
+                  >
+                    {guideLabel(page.h1)}
+                    <span aria-hidden className="text-[#fe5545] transition-transform duration-300 group-hover:translate-x-1">→</span>
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </nav>
+        </div>
+      </section>
 
       {/* ── Quote + CTA ──────────────────────────────────────────── */}
       <section
