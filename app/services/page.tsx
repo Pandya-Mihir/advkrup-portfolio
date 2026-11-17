@@ -7,7 +7,9 @@ import { HeroReveal, FadeUp } from "@/components/ui/animations";
 import { WordReveal } from "@/components/ui/parallax";
 import { LedgerIndex, LedgerPrompt } from "@/components/ui/practice-ledger";
 import { JsonLd } from "@/components/seo/json-ld";
-import { breadcrumbSchema, graph, webPageSchema } from "@/lib/seo/schema";
+import { breadcrumbSchema, faqSchema, graph, webPageSchema } from "@/lib/seo/schema";
+import { FaqSection } from "@/components/seo/faq-section";
+import { SERVICES_FAQS } from "@/lib/seo/faqs";
 import { PAGE_BY_PRACTICE_AREA, SERVICE_PAGES } from "@/lib/seo/locations";
 import { PRACTICE } from "@/lib/seo/site";
 import { LEDGER_AREAS, ledgerNo } from "@/lib/practice-ledger";
@@ -112,12 +114,13 @@ export default function ServicesPage() {
             path: "/services",
             name: "Practice Areas — Land, Revenue & Property Law in Ahmedabad",
             description:
-              "Practice areas of Adv. Krupal P. Savjani: land disputes, revenue records, property documentation, land acquisition, agricultural land, land-use conversion, tenancy and tenure, appeals and court representation.",
+              "Land and revenue law practice in Ahmedabad: land disputes, 7/12 records, title verification, acquisition, N.A. conversion, tenancy and appeals.",
           }),
           breadcrumbSchema([
             { name: "Home", path: "/" },
             { name: "Practice Areas", path: "/services" },
-          ])
+          ]),
+          faqSchema(SERVICES_FAQS, "/services")
         )}
       />
 
@@ -336,6 +339,9 @@ export default function ServicesPage() {
           </div>
         </div>
       </section>
+
+      {/* ── Common questions (also emitted as FAQPage JSON-LD above) ── */}
+      <FaqSection faqs={SERVICES_FAQS} eyebrow="Questions clients ask" title="Common questions about the practice" />
 
       {/* ── CTA ─────────────────────────────────────────────────── */}
       <section data-rail className="bg-[#eeebe5] px-6 py-24 md:px-12 md:py-32">

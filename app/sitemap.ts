@@ -1,5 +1,5 @@
 import type { MetadataRoute } from "next";
-import { SITE_URL, abs } from "@/lib/seo/site";
+import { CONTENT_UPDATED, SITE_URL, abs } from "@/lib/seo/site";
 import { LOCAL_PAGES } from "@/lib/seo/locations";
 import { getAllPosts } from "@/lib/sanity/queries";
 
@@ -7,7 +7,10 @@ import { getAllPosts } from "@/lib/sanity/queries";
 export const revalidate = 86400;
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const now = new Date();
+  // The real date the page copy last changed, not "now": a lastmod that moves
+  // on every request teaches crawlers to ignore it. Blog posts use their own
+  // Sanity timestamps below.
+  const now = new Date(CONTENT_UPDATED);
 
   const core: MetadataRoute.Sitemap = [
     // SITE_URL, not abs("/"): Next.js normalises the home canonical to have

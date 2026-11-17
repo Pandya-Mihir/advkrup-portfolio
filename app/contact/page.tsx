@@ -4,7 +4,9 @@ import { Footer } from "@/components/ui/footer";
 import { WordReveal } from "@/components/ui/parallax";
 import { ContactEnquiry } from "@/components/ui/contact-form";
 import { JsonLd } from "@/components/seo/json-ld";
-import { breadcrumbSchema, contactPageSchema, graph } from "@/lib/seo/schema";
+import { breadcrumbSchema, contactPageSchema, faqSchema, graph } from "@/lib/seo/schema";
+import { FaqSection } from "@/components/seo/faq-section";
+import { CONTACT_FAQS } from "@/lib/seo/faqs";
 import { PRACTICE } from "@/lib/seo/site";
 
 export const metadata: Metadata = {
@@ -50,7 +52,8 @@ export default function ContactPage() {
           breadcrumbSchema([
             { name: "Home", path: "/" },
             { name: "Contact", path: "/contact" },
-          ])
+          ]),
+          faqSchema(CONTACT_FAQS, "/contact")
         )}
       />
 
@@ -217,6 +220,9 @@ export default function ContactPage() {
           />
         </div>
       </section>
+
+      {/* ── Common questions (also emitted as FAQPage JSON-LD above) ── */}
+      <FaqSection faqs={CONTACT_FAQS} eyebrow="Before you get in touch" title="Common questions" />
 
       <Footer />
     </main>

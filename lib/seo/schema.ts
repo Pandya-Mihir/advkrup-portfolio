@@ -15,7 +15,7 @@
  * review markup on LocalBusiness, and inventing ratings risks a manual action.
  * Ratings belong on the Google Business Profile, where clients leave them.
  */
-import { PRACTICE, PRACTICE_AREAS, SITE_URL, abs } from "./site";
+import { CONTENT_UPDATED, PRACTICE, PRACTICE_AREAS, SITE_URL, abs } from "./site";
 import type { LocalFaq } from "./locations";
 
 type Json = Record<string, unknown>;
@@ -195,9 +195,12 @@ export function webPageSchema(opts: {
   description: string;
   breadcrumbPath?: string;
   primaryImage?: string;
+  /** ISO date the page content last changed; defaults to CONTENT_UPDATED. */
+  dateModified?: string;
 }): Json {
   return {
     "@type": "WebPage",
+    dateModified: opts.dateModified ?? CONTENT_UPDATED,
     "@id": `${abs(opts.path)}#webpage`,
     url: abs(opts.path),
     name: opts.name,
@@ -262,6 +265,7 @@ export function contactPageSchema(path: string): Json {
     "@type": "ContactPage",
     "@id": `${abs(path)}#webpage`,
     url: abs(path),
+    dateModified: CONTENT_UPDATED,
     name: `Contact ${PRACTICE.name}`,
     inLanguage: "en-IN",
     isPartOf: { "@id": ID.website },

@@ -76,6 +76,15 @@ export const PRACTICE = {
   foundingLocation: "Ahmedabad, Gujarat, India",
 } as const;
 
+/**
+ * When the site's page content last changed — the date search engines and AI
+ * answer engines are told (WebPage dateModified, sitemap lastmod). Bump it
+ * when page copy changes. It used to be "now" on every build, which marks
+ * every page as freshly changed on every deploy; crawlers learn to ignore a
+ * lastmod that always moves.
+ */
+export const CONTENT_UPDATED = "2026-11-18";
+
 /** Formatted one-line address — use wherever the address is shown as text. */
 export const ADDRESS_LINE = `${PRACTICE.address.street}, ${PRACTICE.address.locality} — ${PRACTICE.address.postalCode}, ${PRACTICE.address.region}, ${PRACTICE.address.countryName}`;
 
