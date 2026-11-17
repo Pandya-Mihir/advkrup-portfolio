@@ -14,7 +14,7 @@ export const metadata: Metadata = {
   // past the ~580px Google shows.
   title: { absolute: "Contact Adv. Krupal Savjani — Makarba, Ahmedabad" },
   description:
-    "Contact Adv. Krupal P. Savjani at Makarba, Ahmedabad. Call or WhatsApp +91 81288 00351 (Mon\u2013Sat, 10am\u20137pm) or send an enquiry online.",
+    "Contact Adv. Krupal P. Savjani at Makarba, Ahmedabad. Call or WhatsApp +91 81288 00351 (Mon\u2013Sat, 10:30am\u20137pm) or send an enquiry online.",
   keywords: [
     "advocate office ahmedabad",
     "advocate contact makarba ahmedabad",
@@ -30,11 +30,11 @@ export const metadata: Metadata = {
   // past the ~580px Google shows.
   title: { absolute: "Contact Adv. Krupal Savjani — Makarba, Ahmedabad" },
     description:
-      "C-1207, Titanium Business Park, Makarba, Ahmedabad — 380015. Phone +91 81288 00351. Mon–Sat, 10am–7pm.",
+      "C-1207, Titanium Business Park, Makarba, Ahmedabad — 380051. Phone +91 81288 00351. Mon–Sat, 10:30am–7pm.",
   },
 };
 
-/** "Mon–Sat · 10:00 am – 7:00 pm · Gujarati · Hindi · English" */
+/** "Mon–Sat · 10:30 am – 7:00 pm · Gujarati · Hindi · English" */
 const AVAILABILITY = [
   ...PRACTICE.openingHours.display.split(", "),
   ...PRACTICE.languages,

@@ -74,7 +74,7 @@ character, so `textContent` read "TheLandAdvocate". Every animated headline on
 the site was unreadable as a phrase.
 
 **NAP.** The footer said `Ahmedabad — 380007`. The office is in Makarba, which
-is 380015 (380007 is Paldi). A wrong pincode on the site that disagrees with
+is 380051 (380007 is Paldi; 380015 is Satellite/Prahladnagar). A wrong pincode on the site that disagrees with
 the Business Profile splits the local signal. It now comes from
 `lib/seo/site.ts`, as does every other copy of the address, phone and hours.
 
@@ -170,7 +170,7 @@ Your profile is already verified, which is the hard part. What remains:
    ranking factor after proximity. Add secondary categories for the land and
    property specialisms.
 2. **Address must match the site character-for-character:**
-   `C-1207, Titanium Business Park, Makarba, Ahmedabad, Gujarat 380015`.
+   `C-1207, Titanium Business Park, Makarba, Ahmedabad, Gujarat 380051`.
    Fix it on whichever side is wrong — the 380007 in the old footer may also be
    sitting in directory listings.
 3. **Service areas** — add Makarba, Prahladnagar, Vejalpur, Ghodasar, Isanpur,

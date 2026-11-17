@@ -31,7 +31,7 @@ export const PRACTICE = {
     street: "C-1207, Titanium Business Park, Makarba",
     locality: "Ahmedabad",
     region: "Gujarat",
-    postalCode: "380015",
+    postalCode: "380051",
     country: "IN",
     countryName: "India",
   },
@@ -56,12 +56,12 @@ export const PRACTICE = {
   whatsapp: "918128800351",
   email: "adv.krupalsavjani@gmail.com",
 
-  /** Mon–Sat, 10:00–19:00 IST. */
+  /** Mon–Sat, 10:30–19:00 IST (matches the Google Business Profile and Justdial). */
   openingHours: {
     days: ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"],
-    opens: "10:00",
+    opens: "10:30",
     closes: "19:00",
-    display: "Mon–Sat, 10:00 am – 7:00 pm",
+    display: "Mon–Sat, 10:30 am – 7:00 pm",
   },
 
   /** Profiles that corroborate the entity. Keep these live and consistent. */
@@ -69,6 +69,7 @@ export const PRACTICE = {
     "https://maps.google.com/?cid=10011974631465872727",
     "https://linkedin.com/in/krupal-savjani-a6a52a1b0/",
     "https://x.com/SavjaniKrupal",
+    "https://www.justdial.com/Ahmedabad/Krupal-Savjaniadvocate-Makraba-Makarba/079PXX79-XX79-241211190605-M1X6_BZDET",
   ],
 
   priceRange: "₹₹",

@@ -152,7 +152,7 @@ export const LOCAL_PAGES: LocalPage[] = [
       },
       {
         q: "Where exactly is the office in Ahmedabad?",
-        a: "C-1207, Titanium Business Park, Makarba, Ahmedabad — 380015, on the Corporate Road side of west Ahmedabad. Office hours are Monday to Saturday, 10:00 am to 7:00 pm. Appointments are preferred so that your documents can be read before you arrive.",
+        a: "C-1207, Titanium Business Park, Makarba, Ahmedabad — 380051, on the Corporate Road side of west Ahmedabad. Office hours are Monday to Saturday, 10:30 am to 7:00 pm. Appointments are preferred so that your documents can be read before you arrive.",
       },
     ],
     nearby: [
@@ -330,7 +330,7 @@ export const LOCAL_PAGES: LocalPage[] = [
     faqs: [
       {
         q: "Where is your office in Makarba?",
-        a: "C-1207, Titanium Business Park, Makarba, Ahmedabad — 380015, on the Corporate Road side. Open Monday to Saturday, 10:00 am to 7:00 pm. Please call +91 81288 00351 to fix a time, so your documents can be read before you arrive rather than during the meeting.",
+        a: "C-1207, Titanium Business Park, Makarba, Ahmedabad — 380051, on the Corporate Road side. Open Monday to Saturday, 10:30 am to 7:00 pm. Please call +91 81288 00351 to fix a time, so your documents can be read before you arrive rather than during the meeting.",
       },
       {
         q: "I searched for an advocate near me in Makarba — do you take small matters?",
@@ -418,7 +418,7 @@ export const LOCAL_PAGES: LocalPage[] = [
       },
       {
         q: "How far is your office from Prahladnagar?",
-        a: "A few minutes. C-1207, Titanium Business Park, Makarba, Ahmedabad — 380015, on Corporate Road. Monday to Saturday, 10:00 am to 7:00 pm, by appointment on +91 81288 00351.",
+        a: "A few minutes. C-1207, Titanium Business Park, Makarba, Ahmedabad — 380051, on Corporate Road. Monday to Saturday, 10:30 am to 7:00 pm, by appointment on +91 81288 00351.",
       },
       {
         q: "Can you act for a company rather than an individual?",
