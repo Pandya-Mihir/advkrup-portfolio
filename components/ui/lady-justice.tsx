@@ -42,7 +42,7 @@ export function LadyJustice({ className = "" }: { className?: string }) {
           srcset, `sizes` has nothing to do. */}
       <Image
         src="/lady-justice.webp"
-        alt=""
+        alt="Bronze statue of Lady Justice, blindfolded, holding the scales of justice"
         fill
         unoptimized
         className="lady-justice__photo object-contain object-bottom"

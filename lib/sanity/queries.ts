@@ -20,6 +20,8 @@ export type SanityPost = {
   publishedAt: string
   title: string
   excerpt: string
+  seoTitle?: string
+  seoDescription?: string
   mainImage: SanityImage
   featured: boolean
   body?: SanityBlock[]
@@ -33,6 +35,8 @@ const postFields = `
   publishedAt,
   title,
   excerpt,
+  seoTitle,
+  seoDescription,
   mainImage,
   featured
 `

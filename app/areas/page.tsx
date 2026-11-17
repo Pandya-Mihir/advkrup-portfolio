@@ -24,7 +24,7 @@ import { ADDRESS_LINE, PRACTICE } from "@/lib/seo/site";
  */
 
 const DESCRIPTION =
-  "Areas served by Adv. Krupal P. Savjani, land and revenue advocate in Ahmedabad: Makarba, Prahladnagar, Vejalpur, Ghodasar, Isanpur, Odhav, the rest of Ahmedabad and land matters across Gujarat.";
+  "Land and revenue advocate serving Makarba, Prahladnagar, Vejalpur, Ghodasar, Isanpur, Odhav, all of Ahmedabad, and land matters across Gujarat.";
 
 export const metadata: Metadata = {
   // `absolute` — the global "| Adv. Krupal Savjani" suffix would push this

@@ -21,10 +21,10 @@ export const metadata: Metadata = {
   // `absolute` — the root layout's title.default already names the practice,
   // so the "| Adv. Krupal Savjani" suffix would be a duplication here.
   title: {
-    absolute: "Land & Revenue Advocate in Ahmedabad | Adv. Krupal P. Savjani",
+    absolute: "Land & Revenue Advocate in Ahmedabad | Adv. Krupal Savjani",
   },
   description:
-    "Adv. Krupal P. Savjani is an advocate in Ahmedabad practising land and revenue law — land disputes, 7/12 Utara and record corrections, title verification, sale deeds, and representation before the revenue authorities and the courts. Office at Makarba, Ahmedabad.",
+    "Advocate in Ahmedabad for land and revenue law: land disputes, 7/12 record corrections, title verification, sale deeds and revenue appeals. Makarba office.",
   alternates: { canonical: "/" },
 };
 

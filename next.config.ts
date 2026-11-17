@@ -24,6 +24,30 @@ const nextConfig: NextConfig = {
       { protocol: "https", hostname: "images.unsplash.com" },
     ],
   },
+
+  // Don't advertise the framework in every response (`X-Powered-By`).
+  poweredByHeader: false,
+
+  /*
+   * One host for the whole site. www.advkrupalsavjani.in used to serve the
+   * same pages with a 200, so search engines saw two copies of every URL.
+   * Every www request now gets a single permanent 301 to the bare domain,
+   * keeping the path (and query). 301 rather than Next's default 308
+   * because SEO checkers and some older clients expect it.
+   *
+   * The front proxy already sends http → https; this only needs the Host
+   * header it passes through, so it works on either scheme.
+   */
+  async redirects() {
+    return [
+      {
+        source: "/:path*",
+        has: [{ type: "host", value: "www.advkrupalsavjani.in" }],
+        destination: "https://advkrupalsavjani.in/:path*",
+        statusCode: 301,
+      },
+    ];
+  },
 };
 
 export default nextConfig;

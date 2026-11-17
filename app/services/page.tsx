@@ -19,7 +19,7 @@ export const metadata: Metadata = {
    */
   title: { absolute: "Practice Areas — Land & Revenue Law in Ahmedabad" },
   description:
-    "Practice areas of Adv. Krupal P. Savjani, advocate in Ahmedabad: land dispute litigation, 7/12 Utara and revenue records, property documentation and title verification, land acquisition, agricultural land, N.A. conversion, tenancy and tenure, revenue appeals and court representation.",
+    "Land and revenue law practice in Ahmedabad: land disputes, 7/12 records, title verification, acquisition, N.A. conversion, tenancy and appeals.",
   keywords: [
     "land dispute lawyer ahmedabad",
     "revenue record lawyer ahmedabad",

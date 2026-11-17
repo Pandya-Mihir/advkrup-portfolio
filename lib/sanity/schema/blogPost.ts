@@ -48,6 +48,23 @@ export const blogPost = defineType({
       rows: 3,
     }),
     defineField({
+      name: 'seoTitle',
+      title: 'SEO title (optional)',
+      description:
+        'Shown in Google results and the browser tab. Keep it under about 60 characters. Leave empty to use the post title (shortened automatically if long).',
+      type: 'string',
+      validation: (r) => r.max(70).warning('Over ~60 characters will be cut off in Google results.'),
+    }),
+    defineField({
+      name: 'seoDescription',
+      title: 'SEO description (optional)',
+      description:
+        'The summary under the title in Google results. Keep it under about 155 characters. Leave empty to use the excerpt.',
+      type: 'text',
+      rows: 2,
+      validation: (r) => r.max(170).warning('Over ~155 characters will be cut off in Google results.'),
+    }),
+    defineField({
       name: 'mainImage',
       title: 'Main Image',
       type: 'image',

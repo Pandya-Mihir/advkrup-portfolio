@@ -18,11 +18,11 @@ export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
 
   title: {
-    default: "Land & Revenue Advocate in Ahmedabad | Adv. Krupal P. Savjani",
+    default: "Land & Revenue Advocate in Ahmedabad | Adv. Krupal Savjani",
     template: "%s | Adv. Krupal Savjani",
   },
   description:
-    "Adv. Krupal P. Savjani — advocate in Ahmedabad practising land and revenue law. Land disputes, 7/12 Utara and record corrections, title verification, sale deeds and representation before the revenue authorities and the courts. Office at Makarba, Ahmedabad.",
+    "Advocate in Ahmedabad for land and revenue law: land disputes, 7/12 record corrections, title verification, sale deeds and revenue appeals. Makarba office.",
   keywords: [
     "advocate in ahmedabad",
     "best advocate in ahmedabad",
@@ -50,7 +50,7 @@ export const metadata: Metadata = {
     siteName: PRACTICE.name,
     locale: "en_IN",
     url: SITE_URL,
-    title: "Land & Revenue Advocate in Ahmedabad | Adv. Krupal P. Savjani",
+    title: "Land & Revenue Advocate in Ahmedabad | Adv. Krupal Savjani",
     description:
       "Land disputes, revenue records, title verification and property documentation — a dedicated land and revenue practice in Ahmedabad, Gujarat.",
     images: [
@@ -67,7 +67,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     site: "@SavjaniKrupal",
     creator: "@SavjaniKrupal",
-    title: "Land & Revenue Advocate in Ahmedabad | Adv. Krupal P. Savjani",
+    title: "Land & Revenue Advocate in Ahmedabad | Adv. Krupal Savjani",
     description:
       "Land disputes, revenue records, title verification and property documentation in Ahmedabad, Gujarat.",
     images: ["/og-image.png"],

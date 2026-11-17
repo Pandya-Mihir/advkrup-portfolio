@@ -14,9 +14,10 @@ import { abs } from "@/lib/seo/site";
 export const revalidate = 60;
 
 export const metadata: Metadata = {
-  title: "Journal — Gujarat Land & Revenue Law Insights",
+  // `absolute`: the layout suffix pushed this past the ~580px Google shows.
+  title: { absolute: "Gujarat Land & Revenue Law Journal | Adv. Krupal Savjani" },
   description:
-    "Practical analysis of Gujarat land and revenue law by Adv. Krupal P. Savjani, advocate in Ahmedabad — 7/12 records, title and tenure, land-use conversion, acquisition and the revenue hierarchy.",
+    "Practical notes on Gujarat land and revenue law by Adv. Krupal Savjani: 7/12 records, title and tenure, N.A. conversion, acquisition and appeals.",
   keywords: [
     "gujarat land law blog",
     "gujarat land revenue code articles",
@@ -28,7 +29,8 @@ export const metadata: Metadata = {
   openGraph: {
     type: "website",
     url: "/blog",
-    title: "Journal — Gujarat Land & Revenue Law Insights",
+    // `absolute`: the layout suffix pushed this past the ~580px Google shows.
+  title: { absolute: "Gujarat Land & Revenue Law Journal | Adv. Krupal Savjani" },
     description:
       "Legal insights on land & revenue law in Gujarat — practical analysis for landowners, claimants and practitioners.",
   },

@@ -8,9 +8,11 @@ import { breadcrumbSchema, contactPageSchema, graph } from "@/lib/seo/schema";
 import { PRACTICE } from "@/lib/seo/site";
 
 export const metadata: Metadata = {
-  title: "Contact — Advocate Office at Makarba, Ahmedabad",
+  // `absolute`: with the layout's "| Adv. Krupal Savjani" suffix this ran
+  // past the ~580px Google shows.
+  title: { absolute: "Contact Adv. Krupal Savjani — Makarba, Ahmedabad" },
   description:
-    "Contact Adv. Krupal P. Savjani, advocate in Ahmedabad. Office at C-1207, Titanium Business Park, Makarba, Ahmedabad — 380015. Phone +91 81288 00351, Mon–Sat 10am–7pm. Land, revenue and property law.",
+    "Contact Adv. Krupal P. Savjani at Makarba, Ahmedabad. Call or WhatsApp +91 81288 00351 (Mon\u2013Sat, 10am\u20137pm) or send an enquiry online.",
   keywords: [
     "advocate office ahmedabad",
     "advocate contact makarba ahmedabad",
@@ -22,7 +24,9 @@ export const metadata: Metadata = {
   openGraph: {
     type: "website",
     url: "/contact",
-    title: "Contact — Advocate Office at Makarba, Ahmedabad",
+    // `absolute`: with the layout's "| Adv. Krupal Savjani" suffix this ran
+  // past the ~580px Google shows.
+  title: { absolute: "Contact Adv. Krupal Savjani — Makarba, Ahmedabad" },
     description:
       "C-1207, Titanium Business Park, Makarba, Ahmedabad — 380015. Phone +91 81288 00351. Mon–Sat, 10am–7pm.",
   },

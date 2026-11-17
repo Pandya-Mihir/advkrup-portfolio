@@ -47,7 +47,13 @@ export const AnimatedDock = ({ className, items }: AnimatedDockProps) => {
             rel={item.target === "_blank" ? "noopener noreferrer" : undefined}
             className="flex items-center justify-center w-full h-full"
           >
-            {item.Icon}
+            {/* The icon alone gave the link no text — no accessible name, and
+                an empty anchor to search engines. The label (also shown as
+                the hover tooltip) is the link's text, visually hidden. */}
+            <span aria-hidden="true" className="contents">
+              {item.Icon}
+            </span>
+            <span className="sr-only">{item.label}</span>
           </Link>
         </DockItem>
       ))}

@@ -72,7 +72,7 @@ export const LOCAL_PAGES: LocalPage[] = [
     kind: "area",
     title: "Advocate in Ahmedabad | Land & Property Lawyer",
     metaDescription:
-      "Looking for an advocate in Ahmedabad for land, property or revenue-record matters? Adv. Krupal P. Savjani practises land & revenue law from Makarba, Ahmedabad — 7/12 corrections, title verification, land disputes and court representation. Call +91 81288 00351.",
+      "Advocate in Ahmedabad for land, property and revenue-record matters: 7/12 corrections, title verification, land disputes and court work. Office at Makarba.",
     keywords: [
       "advocate in ahmedabad",
       "best advocate in ahmedabad",
@@ -174,7 +174,7 @@ export const LOCAL_PAGES: LocalPage[] = [
     kind: "area",
     title: "Advocate in Gujarat | Land & Revenue Law Practice",
     metaDescription:
-      "Advocate in Gujarat for land, revenue and property law — Gujarat Land Revenue Code matters, tenancy and tenure, N.A. conversion, title certificates and Revenue Tribunal representation. Based in Ahmedabad. Call +91 81288 00351.",
+      "Advocate in Gujarat for land and revenue law: Land Revenue Code matters, tenancy and tenure, N.A. conversion, title certificates and Tribunal appeals.",
     keywords: [
       "advocate in gujarat",
       "best advocate in gujarat",
@@ -274,7 +274,7 @@ export const LOCAL_PAGES: LocalPage[] = [
     kind: "area",
     title: "Advocate in Makarba, Ahmedabad | Office at Titanium Park",
     metaDescription:
-      "Advocate near Makarba, Ahmedabad — office at C-1207, Titanium Business Park, Makarba 380015. Land disputes, 7/12 and property card corrections, title verification and sale deeds. Mon–Sat 10am–7pm. Call +91 81288 00351.",
+      "Advocate at Makarba, Ahmedabad (Titanium Business Park): land disputes, 7/12 and property card corrections, title verification and sale deeds.",
     keywords: [
       "advocate near makarba",
       "advocate in makarba",
@@ -358,7 +358,7 @@ export const LOCAL_PAGES: LocalPage[] = [
     kind: "area",
     title: "Advocate in Prahladnagar, Ahmedabad | Property & Land Law",
     metaDescription:
-      "Advocate in Prahladnagar, Ahmedabad for commercial and residential property matters — title verification, sale deeds, lease and licence drafting, land disputes. Office next door at Titanium Business Park, Makarba. Call +91 81288 00351.",
+      "Advocate near Prahladnagar, Ahmedabad for property matters: title verification, sale deeds, lease and licence drafting, land disputes. Office at Makarba.",
     keywords: [
       "advocate in prahladnagar",
       "advocate near prahladnagar",
@@ -434,7 +434,7 @@ export const LOCAL_PAGES: LocalPage[] = [
     kind: "area",
     title: "Advocate in Vejalpur, Ahmedabad | Land & Property Lawyer",
     metaDescription:
-      "Advocate in Vejalpur, Ahmedabad — property card and 7/12 corrections, old gamtal title problems, society redevelopment, sale deeds and land disputes. Office at Titanium Business Park, Makarba. Call +91 81288 00351.",
+      "Advocate in Vejalpur, Ahmedabad: property card and 7/12 corrections, old gamtal title issues, society redevelopment, sale deeds and land disputes.",
     keywords: [
       "advocate in vejalpur",
       "advocate near vejalpur",
@@ -512,7 +512,7 @@ export const LOCAL_PAGES: LocalPage[] = [
     kind: "area",
     title: "Advocate in Ghodasar, Ahmedabad | Land & Property Lawyer",
     metaDescription:
-      "Advocate in Ghodasar, Ahmedabad — society title problems, 7/12 and property card corrections, inherited plots, sale deeds and land disputes in south-east Ahmedabad. Call +91 81288 00351.",
+      "Advocate in Ghodasar, Ahmedabad: society title problems, 7/12 and property card corrections, inherited plots, sale deeds and land disputes.",
     keywords: [
       "advocate in ghodasar",
       "advocate near ghodasar",
@@ -594,7 +594,7 @@ export const LOCAL_PAGES: LocalPage[] = [
     kind: "area",
     title: "Advocate in Isanpur, Ahmedabad | Land & Property Lawyer",
     metaDescription:
-      "Advocate in Isanpur, Ahmedabad — 7/12 and property card corrections, N.A. conversion, plotted scheme title problems, sale deeds and land disputes. Call +91 81288 00351.",
+      "Advocate in Isanpur, Ahmedabad: 7/12 and property card corrections, N.A. conversion, plotted-scheme title problems, sale deeds and land disputes.",
     keywords: [
       "advocate in isanpur",
       "advocate near isanpur",
@@ -672,7 +672,7 @@ export const LOCAL_PAGES: LocalPage[] = [
     kind: "area",
     title: "Advocate in Odhav, Ahmedabad | Industrial & Land Lawyer",
     metaDescription:
-      "Advocate in Odhav, Ahmedabad for industrial and land matters — GIDC plot transfers and conditions, shed sale and lease documentation, 7/12 corrections and land disputes in east Ahmedabad. Call +91 81288 00351.",
+      "Advocate in Odhav, Ahmedabad for industrial land: GIDC plot transfers, shed sale and lease documents, 7/12 corrections and land disputes.",
     keywords: [
       "advocate in odhav",
       "advocate near odhav",
@@ -759,7 +759,7 @@ export const LOCAL_PAGES: LocalPage[] = [
     practiceArea: "land-dispute-litigation",
     title: "Land Dispute Lawyer in Ahmedabad | Title & Possession",
     metaDescription:
-      "Land dispute lawyer in Ahmedabad for title, possession, boundary, encroachment and partition matters — from mutation and revenue appeals to the City Civil Court and Gujarat High Court. Call +91 81288 00351.",
+      "Land dispute lawyer in Ahmedabad for title, possession, boundary, encroachment and partition cases, from revenue appeals to the Gujarat High Court.",
     keywords: [
       "land dispute lawyer in ahmedabad",
       "land dispute advocate ahmedabad",
@@ -846,7 +846,7 @@ export const LOCAL_PAGES: LocalPage[] = [
     practiceArea: "property-documentation",
     title: "Property Lawyer in Ahmedabad | Title Check & Sale Deeds",
     metaDescription:
-      "Property lawyer in Ahmedabad for title verification, title certificates, sale deeds, agreements to sell, banakhat, gift deeds and registration support. Office at Makarba, Ahmedabad. Call +91 81288 00351.",
+      "Property lawyer in Ahmedabad: title verification and certificates, sale deeds, agreements to sell (banakhat), gift deeds and registration support.",
     keywords: [
       "property lawyer in ahmedabad",
       "property advocate ahmedabad",
@@ -934,7 +934,7 @@ export const LOCAL_PAGES: LocalPage[] = [
     practiceArea: "revenue-records",
     title: "7/12 Utara & Revenue Record Lawyer in Ahmedabad",
     metaDescription:
-      "Revenue record lawyer in Ahmedabad — 7/12 Utara and 8-A corrections, mutation entries, village form disputes, property card corrections and appeals to the Collector and Gujarat Revenue Tribunal. Call +91 81288 00351.",
+      "Revenue record lawyer in Ahmedabad: 7/12 and 8-A corrections, mutation entries, property cards, and appeals to the Collector and Revenue Tribunal.",
     keywords: [
       "7/12 utara lawyer ahmedabad",
       "revenue record lawyer in ahmedabad",
@@ -1021,7 +1021,7 @@ export const LOCAL_PAGES: LocalPage[] = [
     practiceArea: "land-acquisition",
     title: "Land Acquisition & Compensation Lawyer in Gujarat",
     metaDescription:
-      "Land acquisition lawyer in Gujarat — objections at the enquiry stage, compensation claims, references for enhancement, solatium and interest, and challenges to acquisition proceedings. Based in Ahmedabad. Call +91 81288 00351.",
+      "Land acquisition lawyer in Gujarat: objections, compensation claims, references for enhancement, solatium and interest, and challenges to acquisition.",
     keywords: [
       "land acquisition lawyer in gujarat",
       "land acquisition advocate ahmedabad",
@@ -1111,7 +1111,7 @@ export const LOCAL_PAGES: LocalPage[] = [
     practiceArea: "agricultural-land",
     title: "Agricultural Land Lawyer in Gujarat | Purchase & Transfer",
     metaDescription:
-      "Agricultural land lawyer in Gujarat — who may buy farmland, agriculturist eligibility, transfer permissions, fragmentation limits, tenure restrictions and 7/12 verification before you pay. Call +91 81288 00351.",
+      "Agricultural land lawyer in Gujarat: farmland eligibility, transfer permissions, fragmentation and tenure limits, and 7/12 checks before you buy.",
     keywords: [
       "agricultural land lawyer in gujarat",
       "who can buy agricultural land in gujarat",
@@ -1197,7 +1197,7 @@ export const LOCAL_PAGES: LocalPage[] = [
     practiceArea: "land-use-conversion",
     title: "N.A. / Bin-Kheti Conversion Lawyer in Gujarat",
     metaDescription:
-      "Non-agricultural (N.A. / bin-kheti) conversion lawyer in Gujarat — permission applications, Parishisht self-declarations, premium assessment, conditions of use and regularising past breaches. Call +91 81288 00351.",
+      "N.A. (bin-kheti) conversion lawyer in Gujarat: permission applications, Parishisht declarations, premium, conditions of use and regularising breaches.",
     keywords: [
       "na conversion lawyer in gujarat",
       "bin kheti permission gujarat",
@@ -1283,7 +1283,7 @@ export const LOCAL_PAGES: LocalPage[] = [
     practiceArea: "tenancy-tenure",
     title: "Tenancy & Tenure Lawyer in Gujarat | New Tenure Land",
     metaDescription:
-      "Tenancy and tenure lawyer in Gujarat — new and impartible tenure, restricted tenure, conversion to old tenure, premium, transfer permissions and tenancy rights under the Gujarat tenancy legislation. Call +91 81288 00351.",
+      "Tenancy and tenure lawyer in Gujarat: new and restricted tenure, conversion to old tenure, premium, transfer permissions and tenancy rights.",
     keywords: [
       "tenancy tenure lawyer in gujarat",
       "new tenure land gujarat",
@@ -1369,7 +1369,7 @@ export const LOCAL_PAGES: LocalPage[] = [
     practiceArea: "appeals-representation",
     title: "Revenue Appeals & Gujarat Revenue Tribunal Advocate",
     metaDescription:
-      "Revenue appeals advocate in Gujarat — appeals to the Deputy Collector and Collector, revisions before the Special Secretary (Revenue) and the Gujarat Revenue Tribunal, and limitation. Call +91 81288 00351.",
+      "Revenue appeals advocate in Gujarat: appeals to the Deputy Collector and Collector, revisions before SSRD and the Gujarat Revenue Tribunal.",
     keywords: [
       "gujarat revenue tribunal advocate",
       "revenue appeal lawyer gujarat",
@@ -1456,7 +1456,7 @@ export const LOCAL_PAGES: LocalPage[] = [
     practiceArea: "court-representation",
     title: "Court Representation in Land Matters | Ahmedabad",
     metaDescription:
-      "Court representation in land and property matters at Ahmedabad — Special Civil Applications and appeals in the Gujarat High Court, and title, injunction, specific performance and partition suits in the City Civil Court. Call +91 81288 00351.",
+      "Land and property litigation in Ahmedabad: Special Civil Applications in the Gujarat High Court; title, injunction and partition suits in civil court.",
     keywords: [
       "high court land advocate in ahmedabad",
       "gujarat high court land lawyer",
@@ -1542,7 +1542,7 @@ export const LOCAL_PAGES: LocalPage[] = [
     practiceArea: "land-policy-consultation",
     title: "Land Due Diligence in Gujarat | Developers & Investors",
     metaDescription:
-      "Land due diligence in Gujarat for developers, investors and institutions — title investigation, tenure and eligibility, scheme and final plot position, conversion constraints, and written title certificates. Call +91 81288 00351.",
+      "Land due diligence in Gujarat for developers and investors: title investigation, tenure, TP scheme position, conversion limits and title certificates.",
     keywords: [
       "land due diligence gujarat",
       "title certificate lawyer gujarat",

@@ -12,6 +12,28 @@ import { JsonLd } from "@/components/seo/json-ld";
 import { blogPostingSchema, breadcrumbSchema, graph } from "@/lib/seo/schema";
 import { abs } from "@/lib/seo/site";
 
+/**
+ * A post title fit for a search result (≤ 60 characters). Long titles are
+ * usually "Main idea: qualifier", so the main idea is kept; failing that,
+ * the title is cut at the last whole word that fits.
+ */
+function shortTitle(title: string, max = 60): string {
+  const t = title.trim();
+  if (t.length <= max) return t;
+  const head = t.split(/\s*[:|]\s*|\s+[—–-]\s+/)[0];
+  if (head.length >= 20 && head.length <= max) return head;
+  const cut = t.slice(0, max + 1);
+  return cut.slice(0, cut.lastIndexOf(" ")).replace(/[\s,;:—–-]+$/, "");
+}
+
+/** Text clipped to `max` characters at a word boundary, with an ellipsis. */
+function clip(text: string, max: number): string {
+  const t = text.replace(/\s+/g, " ").trim();
+  if (t.length <= max) return t;
+  const cut = t.slice(0, max);
+  return cut.slice(0, cut.lastIndexOf(" ")).replace(/[\s,;:—–-]+$/, "") + "…";
+}
+
 export const revalidate = 60;
 
 export async function generateStaticParams() {
@@ -33,17 +55,24 @@ export async function generateMetadata({
     ? urlFor(article.mainImage).width(1200).height(630).url()
     : "/og-image.png";
 
-  return {
-    title: article.title,
-    description:
+  // Google shows roughly 60 characters of title and 155 of description, so
+  // both are held to that: an editor's SEO fields win, otherwise the post's
+  // own title / excerpt, shortened at a natural break.
+  const description = clip(
+    article.seoDescription ||
       article.excerpt ||
-      `${article.title} — analysis of Gujarat land and revenue law by Adv. Krupal P. Savjani, advocate in Ahmedabad.`,
+      `${article.title} — Gujarat land and revenue law by Adv. Krupal P. Savjani, advocate in Ahmedabad.`,
+    155,
+  );
+  return {
+    title: { absolute: article.seoTitle?.trim() || shortTitle(article.title) },
+    description,
     alternates: { canonical: path },
     openGraph: {
       type: "article",
       url: abs(path),
       title: article.title,
-      description: article.excerpt,
+      description,
       publishedTime: article.publishedAt,
       modifiedTime: article._updatedAt ?? article.publishedAt,
       authors: [abs("/")],
@@ -53,7 +82,7 @@ export async function generateMetadata({
     twitter: {
       card: "summary_large_image",
       title: article.title,
-      description: article.excerpt,
+      description,
       images: [image],
     },
   };

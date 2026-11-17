@@ -1,6 +1,7 @@
 "use client";
 import Link from "next/link";
 import { useState } from "react";
+import { useHydrated } from "./use-hydrated";
 
 /**
  * Core Mandates as an index: one hairline-separated row per mandate, with
@@ -42,6 +43,7 @@ const MANDATES = [
 
 export function CoreMandates({ className = "" }: { className?: string }) {
   const [open, setOpen] = useState(0);
+  const hydrated = useHydrated();
 
   return (
     <section
@@ -85,8 +87,11 @@ export function CoreMandates({ className = "" }: { className?: string }) {
                 {mandate.title}
               </h3>
 
-              {/* Phones get the copy inline — there is no pointer to open a row. */}
-              <p className="t-body-sm measure mt-4 text-[#161513]/60 md:hidden">
+              {/* Phones get the copy inline — there is no pointer to open a row.
+                  From md up it is visually hidden (not display:none), so screen
+                  readers still get every row's description; the slot below is
+                  the sighted copy and is aria-hidden. */}
+              <p className="t-body-sm measure mt-4 text-[#161513]/60 md:sr-only">
                 {mandate.body}
               </p>
             </div>
@@ -95,10 +100,21 @@ export function CoreMandates({ className = "" }: { className?: string }) {
       </ul>
 
       {/* The open row's description, in a slot of its own. Fixed height for
-          the longest of them, so swapping rows never moves the link below. */}
+          the longest of them, so swapping rows never moves the link below.
+
+          Filled only after hydration: each description is already in the
+          HTML once, under its own row (shown on phones), and printing the
+          open one here as well put the same paragraph in the page twice —
+          which SEO checkers flag as duplicate text. The load overlay still
+          covers the page during that first frame, so nothing visibly pops
+          in. aria-hidden for the same reason: assistive tech already reads
+          each row's own copy. */}
       <div className="mt-8 hidden h-[5.5rem] justify-end md:flex">
-        <p className="t-body-sm w-[32rem] max-w-full text-right text-[#161513]/60">
-          {MANDATES[open].body}
+        <p
+          aria-hidden="true"
+          className="t-body-sm w-[32rem] max-w-full text-right text-[#161513]/60"
+        >
+          {hydrated ? MANDATES[open].body : null}
         </p>
       </div>
 
